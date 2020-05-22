@@ -26,6 +26,8 @@ class Student(db.Model):
     name = Column(String(120), nullable=False)
     email = Column(String(120), nullable=False, unique=True)
     phone = Column(String(120), nullable=False)
+    # Relationships
+    enrollments = db.relationship('Enrollment', back_populates='student')
 
     # Methods
     def __init__(self, name, email, phone):
@@ -110,7 +112,8 @@ class Course(db.Model):
     # Course data
     title = Column(String(120), nullable=False)
     days = Column(String(240), nullable=False)
-    hour = Column(Integer(), nullable=False)
+    start_time = db.Column(String(120), nullable=False)
+    end_time = db.Column(String(120), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
 
     # Relationships
@@ -120,7 +123,7 @@ class Course(db.Model):
     #                               lazy=True)
 
     # Methods
-    def __init__(self, title, days, hour, description):
+    def __init__(self, title=None, days=None, hour=None, description=None):
         self.title = title
         self.days = days
         self.hour = hour
@@ -137,7 +140,7 @@ class Course(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def info(self):
+    def full(self):
         return {
             'uid': self.uid,
             'title': self.title,
@@ -146,9 +149,16 @@ class Course(db.Model):
                 'name': assignment.instructor.name,
                 'email': assignment.instructor.email
             } for assignment in self.assignments],
-            'days': self.days.split(','),
-            'hour': self.hour,
+            'days': [day.capitalize() for day in self.days.split(',')],
+            'start time': self.start_time,
+            'end time': self.end_time,
             'description': self.description
+        }
+
+    def short(self):
+        return {
+            'uid': self.uid,
+            'title': self.title
         }
 
 
