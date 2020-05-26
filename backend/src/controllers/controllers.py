@@ -2,17 +2,31 @@
 # IMPORTS
 # --------------------------------------------------------------------------"""
 
-
-# Dependencies
-import json  # NOTE: Remove if not used.
+# Standard library dependencies
 import re
-from flask import jsonify, abort
+import json  # NOTE: Delete if unused.
 from types import SimpleNamespace
 
-# Local modules
-from ..database.models import (Student, Instructor, Course,
+# Third party Dependencies
+from flask import jsonify
+
+# Local application dependencies
+from database.models import (Student, Instructor, Course,
                                Assignment, Enrollment)
-from ..config.config import (SCHEDULE_SETTINGS)
+from config.config import (SCHEDULE, STATUS_ERR, SUCCESS)
+
+
+""" ---------------------------------------------------------------------------
+# Error Handling
+# --------------------------------------------------------------------------"""
+
+
+# Raise HTTP status error exceptions
+class StatusError(Exception):
+    def __init__(self, message, description, status_code):
+        self.message = message
+        self.description = description
+        self.status_code = status_code
 
 
 """ --------------------------------------------------------------------------#
@@ -51,8 +65,6 @@ class Controller:
             self.records = [record.full() for record in query]
         elif detail == 'short':
             self.records = [record.short() for record in query]
-        else:
-            abort(422)
 
     """ UTILITY HELPERS
     # ----------------------------------------------------------------------"""
@@ -64,14 +76,14 @@ class Controller:
                 int_string = int(int_string)
                 return int_string
             except ValueError:
-                abort(422)
+                raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.BAD_INT, 422)
 
     # Converts a time string to an integer value expressed as minutes.
     def time_to_int(self, time_string):
         try:
             time_int = (int(time_string[:2]) * 60) + int(time_string[3:])
         except ValueError:
-            abort(422)
+            raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.BAD_TIME, 422)
         return time_int
 
     """ VALIDATION HELPERS
@@ -87,7 +99,10 @@ class Controller:
         for time in time_list:
             if not re.search(
                     r'^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$', time):
-                abort(422)
+                raise StatusError(
+                    STATUS_ERR.CODE_422,
+                    STATUS_ERR.BAD_TIME,
+                    422)
 
     # Verify request data is valid.
     def verify_request_data(self, valid_keys, strict=False):
@@ -96,12 +111,19 @@ class Controller:
         if strict is True:
             for data in valid_keys:
                 if data not in self.request_data.keys():
-                    abort(422)
+                    raise StatusError(
+                        STATUS_ERR.CODE_422,
+                        STATUS_ERR.MISSING_KEY,
+                        422
+                    )
         # Verifies that there are no invalid keys present
-        # in the request body.        
+        # in the request body.
         for key in self.request_data.keys():
             if key not in valid_keys:
-                abort(422)
+                raise StatusError(
+                    STATUS_ERR.CODE_422,
+                    STATUS_ERR.BAD_KEY,
+                    422)
 
     """ DATABASE HELPERS
     # ----------------------------------------------------------------------"""
@@ -127,17 +149,22 @@ class Controller:
         if self.table:
             return self.table.query.order_by(self.table.uid).all()
         else:
-            abort(422)
+            raise StatusError(STATUS_ERR.CODE_500, STATUS_ERR.GENERIC, 500)
 
     # Get a single record by provided table.
     def get_record_by_id(self):
         if self.table:
             self.record = (self.table.query
-                           .filter(self.table.uid == self.uid).first())
+                           .filter(self.table.uid == self.uid)
+                           .one_or_none())
             if not self.record:
-                abort(404)
+                raise StatusError(
+                    STATUS_ERR.CODE_404,
+                    STATUS_ERR.NO_RECORD,
+                    404
+                )
         else:
-            abort(422)
+            raise StatusError(STATUS_ERR.CODE_500, STATUS_ERR.GENERIC, 500)
 
 
 # Controller class for the Student databale model.
@@ -174,6 +201,12 @@ class Courses(Controller):
         self.response_data.courses = self.records
         self.generate_response()
 
+    # Gets a single course record
+    def get_course(self):
+        self.get_record_by_id()
+        self.response_data.course = self.record.full()
+        self.generate_response()
+
     # Creates a new course record.
     def create_course(self):
         # Verify required keys exist in body of JSON request.
@@ -189,7 +222,7 @@ class Courses(Controller):
         #  Create the course record and insert it.
         self.create_record()
         # Generate response.
-        self.response_data.message = 'course created'
+        self.response_data.message = SUCCESS.COURSE_CREATED
         self.generate_response()
 
     # Updates a course record.
@@ -231,13 +264,13 @@ class Courses(Controller):
         # Build edits to course record and update it.
         self.edit_record()
         # Generate response.
-        self.response_data.message = f'updated course with id: {self.uid}'
+        self.response_data.message = f'{SUCCESS.COURSE_EDITED} {self.uid}'
         self.generate_response()
 
     # Deletes a course record.
     def delete_course(self):
         self.delete_record()
-        self.response_data.message = f'deleted course with id: {self.uid}'
+        self.response_data.message = f'{SUCCESS.COURSE_DELETED} {self.uid}'
         self.generate_response()
 
     """ COURSE VALIDATION HELPERS
@@ -251,16 +284,24 @@ class Courses(Controller):
             for day in self.request_data['days']:
                 # Verify day in list is valid, error if not.
                 if (day.casefold() not in map(
-                        str.casefold, SCHEDULE_SETTINGS['ALLOWED_DAYS']
+                        str.casefold, SCHEDULE.ALLOWED_DAYS
                         )):
-                    abort(422)
+                    raise StatusError(
+                        STATUS_ERR.CODE_422,
+                        STATUS_ERR.BAD_DAY,
+                        422
+                    )
                 else:
                     # Check for duplicate values, error if duplicates.
                     if self.request_data['days'].count(day) > 1:
-                        abort(422)
+                        raise StatusError(
+                            STATUS_ERR.CODE_422,
+                            STATUS_ERR.DUP_DAY,
+                            422
+                        )
             self.request_data['days'] = ','.join(self.request_data['days'])
         else:
-            abort(422)
+            raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.DAY_LIST, 422)
 
     # Takes validated time string inputs, converts the to integers
     # for comparison, and checks to see that the start time is
@@ -272,8 +313,8 @@ class Courses(Controller):
         end_time = self.time_to_int(end_time)
         # Compare times to validation conditions.
         duration = end_time - start_time
-        if (duration < 1 or duration < SCHEDULE_SETTINGS['MIN_LENGTH'] or
-                duration > SCHEDULE_SETTINGS['MAX_LENGTH'] or
-                start_time < SCHEDULE_SETTINGS['MIN_START'] or
-                end_time > SCHEDULE_SETTINGS['MAX_END']):
-            abort(422)
+        if (duration < 1 or duration < SCHEDULE.MIN_LENGTH or
+                duration > SCHEDULE.MAX_LENGTH or
+                start_time < SCHEDULE.MIN_START or
+                end_time > SCHEDULE.MAX_END):
+            raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.INV_TIME, 422)

@@ -3,11 +3,13 @@
 # --------------------------------------------------------------------------"""
 
 
-# Dependencies
+# Third party dependencies
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String
 
-# Local modules
-from ..config.config import db
+# Local applicaiton dependencies
+from config.config import db
+
 
 
 """ --------------------------------------------------------------------------#
@@ -21,11 +23,11 @@ class Student(db.Model):
     # Main model
     __tablename__ = 'student'
     # Autoincrementing, unique primary key
-    uid = Column(Integer(), primary_key=True)
+    uid = db.Column(db.Integer(), primary_key=True)
     # Student data
-    name = Column(String(120), nullable=False)
-    email = Column(String(120), nullable=False, unique=True)
-    phone = Column(String(120), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    phone = db.Column(db.String(120), nullable=False)
     # Relationships
     enrollments = db.relationship('Enrollment', back_populates='student')
 
@@ -62,13 +64,13 @@ class Instructor(db.Model):
     __tablename__ = 'instructor'
 
     # Autoincrementing, unique primary key
-    uid = Column(Integer(), primary_key=True)
+    uid = db.Column(db.Integer(), primary_key=True)
 
     # Instructor data
-    name = Column(String(120), nullable=False)
-    email = Column(String(120), nullable=False, unique=True)
-    phone = Column(String(129), nullable=False)
-    bio = Column(String(1000), nullable=False)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    phone = db.Column(db.String(129), nullable=False)
+    bio = db.Column(db.String(1000), nullable=False)
 
     # Relationships
     assignments = db.relationship('Assignment', back_populates='instructor')
@@ -107,13 +109,13 @@ class Course(db.Model):
     __tablename__ = 'course'
 
     # Autoincrementing, unique primary key
-    uid = Column(Integer(), primary_key=True)
+    uid = db.Column(db.Integer(), primary_key=True)
 
     # Course data
-    title = Column(String(120), nullable=False)
-    days = Column(String(240), nullable=False)
-    start_time = db.Column(String(120), nullable=False)
-    end_time = db.Column(String(120), nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    days = db.Column(db.String(240), nullable=False)
+    start_time = db.Column(db.String(120), nullable=False)
+    end_time = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
 
     # Relationships
@@ -123,10 +125,13 @@ class Course(db.Model):
     #                               lazy=True)
 
     # Methods
-    def __init__(self, title=None, days=None, hour=None, description=None):
+    def __init__(self, title=None, days=None, hour=None,
+                 start_time=None, end_time=None, description=None):
         self.title = title
         self.days = days
         self.hour = hour
+        self.start_time = start_time
+        self.end_time = end_time
         self.description = description
 
     def insert(self):
@@ -149,7 +154,10 @@ class Course(db.Model):
                 'name': assignment.instructor.name,
                 'email': assignment.instructor.email
             } for assignment in self.assignments],
-            'days': [day.capitalize() for day in self.days.split(',')],
+            'days': (
+                [day.capitalize() for day in self.days.split(',')]
+                if type(self.days) != list else self.days
+                ),
             'start time': self.start_time,
             'end time': self.end_time,
             'description': self.description
