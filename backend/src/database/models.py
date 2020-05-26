@@ -32,28 +32,55 @@ class Student(db.Model):
     enrollments = db.relationship('Enrollment', back_populates='student')
 
     # Methods
-    def __init__(self, name, email, phone):
+    def __init__(self, name=None, email=None, phone=None):
         self.name = name
         self.email = email
         self.phone = phone
 
+    # Insert record.
     def insert(self):
         db.session.add(self)
         db.session.commit()
 
+    # Update record.
     def update(self):
         db.session.commit()
 
+    # Delete record.
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-    def display(self):
+    # Return full details.
+    def full(self):
         return {
             'uid': self.uid,
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
+        }
+
+    # Return truncated details.
+    def short(self):
+        return {
+            'uid': self.uid,
+            'name': self.name
+        }
+
+    # Return full details with enrollments.
+    def with_enrollments(self):
+        return {
+            'uid': self.uid,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'enrollments': [{
+                'uid': enrollment.uid,
+                'title': enrollment.course.title,
+                'days': enrollment.course.days,
+                'start_time': enrollment.course.start_time,
+                'end_time': enrollment.course.end_time
+            } for enrollment in self.enrollments]
         }
 
 
@@ -134,17 +161,21 @@ class Course(db.Model):
         self.end_time = end_time
         self.description = description
 
+    # Insert record.
     def insert(self):
         db.session.add(self)
         db.session.commit()
 
+    # Update record.
     def update(self):
         db.session.commit()
 
+    # Delete record.
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
+    # Return full details
     def full(self):
         return {
             'uid': self.uid,
@@ -162,7 +193,8 @@ class Course(db.Model):
             'end time': self.end_time,
             'description': self.description
         }
-
+        
+    # Return truncated details.
     def short(self):
         return {
             'uid': self.uid,

@@ -12,9 +12,9 @@ from flask_cors import CORS
 
 # Local application dependencies
 from config.config import setup_db, STATUS_ERR
-from database.models import (Student, Instructor, Assignment,
-                             Enrollment)
-from controllers.controllers import (StatusError, Courses)
+from database.models import (Instructor, Assignment, Enrollment)
+from controllers.controllers import (Courses, Students)
+from helpers.helpers import StatusError, get_detail
 
 
 """ --------------------------------------------------------------------------#
@@ -45,8 +45,50 @@ def create_app():
 
     # Student routes
     # --------------------------------------------------------------------------
+    """ View or create students. """
     @app.route('/students', methods=['GET', 'POST'])
-    def view_or_create_students():
+    def view_or_manage_students():
+        # Respond to GET request.
+        if request.method == 'GET':
+            # Get detail arguments.
+            detail = get_detail()
+            page = request.args.get('page')
+            # Create Students object.
+            this_student_list = Students()
+            # Get a list of students with detail.
+            this_student_list.list_students(detail=detail, page=page)
+            # Return JSON response
+            return this_student_list.response
+        # Respond to POST request.
+        elif request.method == 'POST':
+            # Get response data.
+            this_request = request.get_json()
+            # Pass response data to controller.
+            this_course = Students(request_data=this_request)
+            # Create new student.
+            this_course.create_student()
+            # Return JSON response.
+            return this_course.response
+
+    """ View, edit or delete student by id. """
+    @app.route('/students/<uid>', methods=['GET', 'PATCH', 'DELETE'])
+    def view_or_manage_student(uid):
+        # Get response data.
+        this_request = request.get_json()
+        # Pass response data and student id to controller.
+        this_student = Students(request_data=this_request, uid=uid)
+        # Get, patch or delete course and return JSON response.
+        if request.method == 'GET':
+            this_student.get_student()
+        elif request.method == 'PATCH':
+            this_student.edit_student()
+        elif request.method == "DELETE":
+            this_student.delete_student()
+        return this_student.response
+
+    """ Get courses student is enrolled in. """
+    @app.route('/student/<uid>/coruses', methods=['GET'])
+    def view_student_courses():
         return jsonify({
                     'success': False,
                     'message': 'not implemented'
@@ -78,49 +120,48 @@ def create_app():
 
     # Course routes
     # -------------------------------------------------------------------------
-    """ View and Manage Courses Route """
+    """ View or create courses. """
     @app.route('/courses', methods=['GET', 'POST'])
     def view_or_manage_courses():
         # Respond to GET request.
         if request.method == 'GET':
-            # Create Courses object and create list of all courses.
-            detail = request.args.get('detail', None)
-            if not detail:
-                detail = 'full'
-            # Validate argument.
-            if detail != 'short' and detail != 'full':
-                raise StatusError(
-                    STATUS_ERR.CODE_422,
-                    STATUS_ERR.BAD_DETAIL,
-                    422
-                )
-            # Get course list with detail.
+            # Get detail arguments.
+            detail = get_detail()
+            page = request.args.get('page')
+            # Create Courses object.
             this_course_list = Courses()
-            this_course_list.list_courses(detail=detail)
+            # Get a list of courses with detail.
+            this_course_list.list_courses(detail=detail, page=page)
             # Return JSON response
             return this_course_list.response
         # Respond to POST request.
         elif request.method == 'POST':
+            # Get response data.
             this_request = request.get_json()
+            # Pass response data to controller.
             this_course = Courses(request_data=this_request)
+            # Create new course.
             this_course.create_course()
             # Return JSON response.
             return this_course.response
 
+    """ View, edit or delete a course by id. """
     @app.route('/courses/<uid>', methods=['GET', 'PATCH', 'DELETE'])
     def view_or_manage_course(uid):
+        # Get response data.
         this_request = request.get_json()
+        # Pass response data and course id to controller.
         this_course = Courses(request_data=this_request, uid=uid)
+        # Get, patch or delete course and return JSON response.
         if request.method == 'GET':
             this_course.get_course()
-            return this_course.response
         elif request.method == 'PATCH':
             this_course.edit_course()
-            return this_course.response
         elif request.method == "DELETE":
             this_course.delete_course()
-            return this_course.response
+        return this_course.response
 
+    """ Get students enrolled in a course. """
     @app.route('/courses/<uid>/students', methods=['GET'])
     def view_students_enrolled():
         return jsonify({
@@ -128,6 +169,7 @@ def create_app():
                     'message': 'not implemented'
                 }), 501
 
+    """ Get instructors assigned to a a course. """
     @app.route('/courses/<uid>/instructors', methods=['GET'])
     def view_instructors_assigned():
         return jsonify({
@@ -162,10 +204,17 @@ def create_app():
     # -------------------------------------------------------------------------
     @app.route('/enrollment', methods=['POST'])
     def enroll_course():
-        return jsonify({
-            'success': False,
-            'message': 'not implemented'
-        }), 501
+        # TEST CASE
+        if request.method == 'POST':
+            this_enrollment = Enrollment(
+                course_uid=1,
+                student_uid=3,
+            )
+            this_enrollment.insert()
+            return jsonify({
+                    'success': 'true',
+                    'message': 'assignment created'
+            }), 200
 
     @app.route('/enrollment/<uid>', methods=['DELETE'])
     def delete_enrollment():

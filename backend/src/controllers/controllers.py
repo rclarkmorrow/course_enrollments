@@ -12,21 +12,9 @@ from flask import jsonify
 
 # Local application dependencies
 from database.models import (Student, Instructor, Course,
-                               Assignment, Enrollment)
-from config.config import (SCHEDULE, STATUS_ERR, SUCCESS)
-
-
-""" ---------------------------------------------------------------------------
-# Error Handling
-# --------------------------------------------------------------------------"""
-
-
-# Raise HTTP status error exceptions
-class StatusError(Exception):
-    def __init__(self, message, description, status_code):
-        self.message = message
-        self.description = description
-        self.status_code = status_code
+                             Assignment, Enrollment)
+from config.config import REGEX, PAGE_LENGTH, SCHEDULE, STATUS_ERR, SUCCESS
+from helpers.helpers import StatusError
 
 
 """ --------------------------------------------------------------------------#
@@ -56,15 +44,37 @@ class Controller:
         self.response = jsonify(self.response_data.__dict__), 200
 
     # Adds records to class object with argument that determines
-    # whether the records have full details or truncated details.
-    def append_records_list(self, table=None, detail='full'):
+    # whether the records have full details or truncated details
+    # and arguments that determine paginated response.
+    def append_records_list(self, table=None, detail='full',
+                            page_length=10, page=None):
         # Get all records as a query object.
         query = self.get_all_records()
+        self.response_data.total_records = len(query)
+        # If page is none, returns all records.
+        if page is None:
+            start = 0
+            stop = None
+        # Checks if page can be converted to a positive integer, and
+        # paginates response. Otherwise, returns a 422 error.
+        else:
+            page = self.string_to_int(page)
+            if page < 1:
+                raise StatusError(
+                    STATUS_ERR.CODE_422,
+                    STATUS_ERR.BAD_PAGE,
+                    422
+                )
+            start = (page - 1) * page_length
+            stop = start + page_length
         # Structure details
         if detail == 'full':
-            self.records = [record.full() for record in query]
+            self.records = (([record.full() for record in query])[start:stop])
         elif detail == 'short':
-            self.records = [record.short() for record in query]
+            self.records = (([record.short() for record in query])[start:stop])
+        # Check length of records, error if there are none.
+        if len(self.records) < 1:
+            raise StatusError(STATUS_ERR.CODE_404, STATUS_ERR.NO_RECORDS, 404)
 
     """ UTILITY HELPERS
     # ----------------------------------------------------------------------"""
@@ -104,6 +114,25 @@ class Controller:
                     STATUS_ERR.BAD_TIME,
                     422)
 
+    # Verify that a string represents a valid US phone number.
+    def verify_phone(self, phone):
+        # Regex validates phone format.
+        if (not re.match(REGEX.PHONE_ONE, phone)
+                and not re.match(REGEX.PHONE_TWO, phone)):
+            raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.BAD_PHONE, 422)
+        # If phone in 123-456-7890 format, take out dashes.
+        if len(phone) > 10:
+            phone = (phone[:3] + phone[4:7] + phone[8:])
+        return phone
+
+    # Verify that a string represents a valid email address.
+    def verify_email(self, email):
+        # Regex validates email format.
+        if not re.search(REGEX.EMAIL, email):
+            raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.BAD_EMAIL, 422)
+        # Return email address in lower case.
+        return email.lower()
+
     # Verify request data is valid.
     def verify_request_data(self, valid_keys, strict=False):
         # Verifies that all valid keys are present in the
@@ -125,12 +154,27 @@ class Controller:
                     STATUS_ERR.BAD_KEY,
                     422)
 
+    # Verifies that a value is unique.
+    def check_unique(self, key, value, uid=None,
+                     message=STATUS_ERR.UNIQUE_GENERIC):
+        query = (
+            self.table.query
+            .filter(getattr(self.table, key)
+                    == value).first()
+        )
+        # If a record is returned and uid doesn't match
+        # the uid of the record, raise an error.
+        if query is not None and query.uid != uid:
+            raise StatusError(STATUS_ERR.CODE_422, message, 422)
+
     """ DATABASE HELPERS
     # ----------------------------------------------------------------------"""
     # Builds a new record and inserts in the database.
     def create_record(self):
         self.record = self.table()
         for key, value in self.request_data.items():
+            if type(value) is str:
+                value = value.strip()
             setattr(self.record, key, value)
         self.record.insert()
 
@@ -171,8 +215,81 @@ class Controller:
 # -----------------------------------------------------------------------------
 class Students(Controller):
     # Init self with super.
-    def __init__self(self, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(table=Student, **kwargs)
+        # Set valid keys for student record.
+        self.valid_keys = ['name', 'email', 'phone']
+
+    """ ROUTE HANDLERS
+    # ----------------------------------------------------------------------"""
+    # Returns a list of students. Page length can be configured in config.py
+    def list_students(self, detail='full', page_length=PAGE_LENGTH.STUDENTS,
+                      page=None):
+        self.append_records_list(detail=detail, page_length=page_length,
+                                 page=page)
+        self.response_data.students = self.records
+        self.generate_response()
+
+    # Gets a single student record
+    def get_student(self):
+        self.get_record_by_id()
+        self.response_data.student = self.record.full()
+        self.generate_response()
+
+    # Creates a new student record.
+    def create_student(self):
+        # Verify required keys exist in body of JSON request.
+        self.verify_request_data(self.valid_keys, strict=True)
+        # Verify phone number and retreieve format for dababase.
+        self.request_data['phone'] = self.verify_phone(
+            self.request_data['phone']
+        )
+        # Verify email address and retrieve format for database.
+        self.request_data['email'] = self.verify_email(
+            self.request_data['email']
+        )
+        # Verify that email address is unique.
+        self.check_unique(key='email', value=self.request_data['email'],
+                          message=STATUS_ERR.UNIQUE_EMAIL)
+        # Create the student record and insert it.
+        self.create_record()
+        # Generate response.
+        self.response_data.message = SUCCESS.STUDENT_CREATED
+        self.generate_response()
+
+    # Updates a student record.
+    def edit_student(self):
+        # Get the record to edit.
+        self.get_record_by_id()
+        # Verify valid keys exists in body of JSON request.
+        self.verify_request_data(self.valid_keys)
+        # If phone in request, verify it and return format for database.
+        if 'phone' in self.request_data.keys():
+            self.request_data['phone'] = self.verify_phone(
+                self.request_data['phone']
+            )
+        # If email in request, verify it and check that it is unique.
+        if 'email' in self.request_data.keys():
+            self.request_data['email'] = self.verify_email(
+                self.request_data['email']
+            )
+            self.check_unique(
+                key='email',
+                value=self.request_data['email'],
+                message=STATUS_ERR.UNIQUE_EMAIL,
+                uid=self.record.uid
+            )
+        # Build edits to student record and update it.
+        self.edit_record()
+        # Generate response.
+        self.response_data.message = f'{SUCCESS.STUDENT_EDITED} {self.uid}'
+        self.generate_response()
+
+    # Deletes a student record.
+    def delete_student(self):
+        self.delete_record()
+        self.response_data.message = f'{SUCCESS.STUDENT_DELETED} {self.uid}'
+        self.generate_response()
 
 
 # Controller class for the Instructor databale model.
@@ -195,9 +312,11 @@ class Courses(Controller):
 
     """ ROUTE HANDLERS
     # ----------------------------------------------------------------------"""
-    # Returns a list of courses.
-    def list_courses(self, detail='full'):
-        self.append_records_list(detail=detail)
+    # Returns a list of courses. Page length can be configured in config.py.
+    def list_courses(self, detail='full', page_length=PAGE_LENGTH.COURSES,
+                     page=None):
+        self.append_records_list(detail=detail, page_length=page_length,
+                                 page=page)
         self.response_data.courses = self.records
         self.generate_response()
 

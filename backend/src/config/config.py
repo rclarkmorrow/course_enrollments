@@ -64,6 +64,14 @@ def create_test_db_path():
 # Enable debug mode.
 DEBUG = True
 
+# Regex expressions for validation.
+REGEX = SimpleNamespace(
+    PHONE_ONE=r'^[0-9]{3}-[0-9]{3}-[0-9]{4}$',
+    PHONE_TWO=r'^[0-9]{10}$',
+    EMAIL=(r'^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]'
+           r'+\.)+[a-zA-Z]{2,7}$')
+)
+
 # Set Pagination
 PAGE_LENGTH = SimpleNamespace(
     STUDENTS=10,
@@ -103,7 +111,10 @@ SCHEDULE = SimpleNamespace(
 SUCCESS = SimpleNamespace(
     COURSE_CREATED='course created',
     COURSE_EDITED='updated course with id:',
-    COURSE_DELETED='deleted course with id"',
+    COURSE_DELETED='deleted course with id:',
+    STUDENT_CREATED='student created',
+    STUDENT_EDITED='updated student with id:',
+    STUDENT_DELETED='deleted student with id:'
 )
 
 STATUS_ERR = SimpleNamespace(
@@ -113,16 +124,21 @@ STATUS_ERR = SimpleNamespace(
     CODE_422='request unprocessable',
     CODE_500='internal server error',
     GENERIC='request could not be processed due to an error',
-    BAD_DETAIL=('detail must be "full" or "short", defaults to full with no'
+    BAD_DETAIL=('detail must be full or short, defaults to full with no'
                 ' arguments'),
     BAD_INT='value could not be converted to integer',
-    BAD_TIME=('you must use 24-Hour time as a string in the format'
-              ' "HH:MM"'),
+    BAD_TIME=('you must use 24-Hour time as a string in the format: HH:MM'),
     MISSING_KEY='at least one required key is missing from the request body',
     BAD_KEY='the request body contains at least one invalid key',
     BAD_DAY='the request body contains at least on invalid day',
     DUP_DAY='duplicate days are not allowed',
     DAY_LIST='scheduled days must be provided in list format',
     INV_TIME='the request body contains at least one invalid time',
-    NO_RECORD='record could not be found in database'
+    NO_RECORD='record could not be found in database',
+    NO_RECORDS='no records found in database.',
+    BAD_PAGE='the page argument must be an integer above zero.',
+    BAD_PHONE='phone numbers must be in formats: 1234567890 or 123-456-7890',
+    BAD_EMAIL='the email provided is invalid.',
+    UNIQUE_GENERIC='at least one key needs to be a unique value',
+    UNIQUE_EMAIL='email must be a unique value'
 )
