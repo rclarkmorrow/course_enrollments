@@ -29,7 +29,7 @@ class Controller:
     # Init self with data
     def __init__(self, table=None, request_data=None, uid=None):
         self.request_data = request_data
-        print(request_data)
+        # print(request_data)
         self.table = table
         self.uid = uid
         if uid:   # When uid is not one, convert to integer.
@@ -296,8 +296,81 @@ class Students(Controller):
 # -----------------------------------------------------------------------------
 class Instructors(Controller):
     # Init self with super.
-    def __init__self(self, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(table=Instructor, **kwargs)
+        # Set valid keys for student record.
+        self.valid_keys = ['name', 'email', 'phone', 'bio']
+
+    """ ROUTE HANDLERS
+    # ----------------------------------------------------------------------"""
+    # Returns a list of students. Page length can be configured in config.py
+    def list_instructors(self, detail='full',
+                         page_length=PAGE_LENGTH.INSTRUCTORS, page=None):
+        self.append_records_list(detail=detail, page_length=page_length,
+                                 page=page)
+        self.response_data.instructors = self.records
+        self.generate_response()
+
+    # Gets a single student record
+    def get_instructor(self):
+        self.get_record_by_id()
+        self.response_data.instructor = self.record.full()
+        self.generate_response()
+
+    # Creates a new student record.
+    def create_instructor(self):
+        # Verify required keys exist in body of JSON request.
+        self.verify_request_data(self.valid_keys, strict=True)
+        # Verify phone number and retreieve format for dababase.
+        self.request_data['phone'] = self.verify_phone(
+            self.request_data['phone']
+        )
+        # Verify email address and retrieve format for database.
+        self.request_data['email'] = self.verify_email(
+            self.request_data['email']
+        )
+        # Verify that email address is unique.
+        self.check_unique(key='email', value=self.request_data['email'],
+                          message=STATUS_ERR.UNIQUE_EMAIL)
+        # Create the student record and insert it.
+        self.create_record()
+        # Generate response.
+        self.response_data.message = SUCCESS.INSTRUCTOR_CREATED
+        self.generate_response()
+
+    # Updates a student record.
+    def edit_instructor(self):
+        # Get the record to edit.
+        self.get_record_by_id()
+        # Verify valid keys exists in body of JSON request.
+        self.verify_request_data(self.valid_keys)
+        # If phone in request, verify it and return format for database.
+        if 'phone' in self.request_data.keys():
+            self.request_data['phone'] = self.verify_phone(
+                self.request_data['phone']
+            )
+        # If email in request, verify it and check that it is unique.
+        if 'email' in self.request_data.keys():
+            self.request_data['email'] = self.verify_email(
+                self.request_data['email']
+            )
+            self.check_unique(
+                key='email',
+                value=self.request_data['email'],
+                message=STATUS_ERR.UNIQUE_EMAIL,
+                uid=self.record.uid
+            )
+        # Build edits to student record and update it.
+        self.edit_record()
+        # Generate response.
+        self.response_data.message = f'{SUCCESS.INSTRUCTOR_EDITED} {self.uid}'
+        self.generate_response()
+
+    # Deletes a student record.
+    def delete_instructor(self):
+        self.delete_record()
+        self.response_data.message = f'{SUCCESS.INSTRUCTOR_DELETED} {self.uid}'
+        self.generate_response()
 
 
 # Controller class for the Course databale model.

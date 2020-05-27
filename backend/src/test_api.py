@@ -17,7 +17,7 @@ from config.config import db, setup_db, create_test_db_path
 from config.config import STATUS_ERR, SUCCESS, PAGE_LENGTH
 from database.test_data.courses_data import CourseTest
 from database.test_data.students_data import StudentTest
-
+from database.test_data.instructors_data import InstructorTest
 
 
 """ ---------------------------------------------------------------------------
@@ -44,6 +44,9 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Add test student records to test database.
         self.students = StudentTest()
         self.students.create_records()
+        # Add test instructor records to test database.
+        self.instructors = InstructorTest()
+        self.instructors.create_records()
 
     # Remove session, drop db tables and tear down app context.
     def tearDown(self):
@@ -358,6 +361,292 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_DELETED} {uid}')
+
+    """ -----------------------------------------------------------------------
+    # INSTRUCTORS ENDPOINT TESTS
+    # ----------------------------------------------------------------------"""
+
+    def test_get_instructors_default(self):
+        """Verifies instructor records are returned."""
+        # Send get request and load results.
+        response = self.client().get('/instructors')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['instructors']))
+        self.assertTrue(data['instructors'])
+
+    def test_get_instructors_paginate(self):
+        """Verifies instructor records are returned with pagination."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?page=1')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['instructors']) < PAGE_LENGTH.INSTRUCTORS + 1)
+        self.assertTrue(data['total_records'])
+        self.assertTrue(data['instructors'])
+
+    def test_get_instructors_short(self):
+        """Verifies instructor records returned in short form."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?detail=short')
+        data = json.loads(response.data)
+        allowed = ['uid', 'name', 'bio']
+        # Verify response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['instructors']))
+        self.assertTrue(data['instructors'])
+        self.assertTrue(self.check_short(data, allowed))
+
+    def test_get_instructors_full(self):
+        """Verifies instructor records are returned."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?detail=full')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['instructors']))
+        self.assertTrue(data['instructors'])
+
+    def test_404_instructors_paginate(self):
+        """Verifies 404 error when page is out of range."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?page=100000')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORDS)
+
+    def test_405_instructor_patch_not_allowed(self):
+        """Verifies 405 if patch method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().patch(
+            '/instructors', json=self.instructors.data.edit_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_405_instructor_put_not_allowed(self):
+        """Verifies 405 if put method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().put(
+            '/instructors', json=self.instructors.data.edit_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_405_instructor_delete_not_allowed(self):
+        """Verifies 405 if delete method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().delete(
+            '/instructors', json=self.instructors.data.edit_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_422_instructors_invalid_detail(self):
+        """Verifies 422 error with invalide detail argument."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?detail=junk')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_DETAIL)
+
+    def test_422_instructors_invalid_page_zero(self):
+        """Verifies 422 error when page argument is zero."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?page=0')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_PAGE)
+
+    def test_422_instructors_invalid_page_argument(self):
+        """Verifies 422 error when page argument is not integer."""
+        # Send get request and load results.
+        response = self.client().get('/instructors?page=junk')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_INT)
+
+    def test_create_instructor(self):
+        """Verifies creating a new instructor."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.add_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], SUCCESS.INSTRUCTOR_CREATED)
+
+    def test_422_create_instructor_missing_key(self):
+        """Verifies 422 if instructor data is missing a key."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.missing_key
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.MISSING_KEY)
+
+    def test_422_create_instructor_invalid_key(self):
+        """Verifies 422 if instructor data includes invalid key."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.bad_key
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_KEY)
+
+    def test_422_create_instructor_invalid_phone(self):
+        """Verifies 422 if instructor data includes invalid phone."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.bad_phone
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_PHONE)
+
+    def test_422_create_instructor_invalid_email(self):
+        """Verifies 422 if instructor data includes invalid email."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.bad_email
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_EMAIL)
+
+    def test_422_create_instructor_not_unique_email(self):
+        """Verifies 422 if instructor data includes an email
+           that is not unique."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.not_unique_email
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.UNIQUE_EMAIL)
+
+    def test_get_instructor(self):
+        """Verifies getting a instructor."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['instructor'])
+
+    def test_edit_instructor(self):
+        """Verifies editing a instructor."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/instructors/{uid}', json=self.instructors.data.edit_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.INSTRUCTOR_EDITED} {uid}')
+
+    def test_edit_instructor_email_self_match(self):
+        """Verifies 422 editing a instructor with email that is not unique"""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/instructors/{uid}',
+            json=self.instructors.data.patch_not_unique_email
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.INSTRUCTOR_EDITED} {uid}')
+
+    def test_404_get_instructor(self):
+        """Verifies 404 error for non-existent instructor."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_422_edit_instructor(self):
+        """Verifies 422 editing a instructor with email that is not unique"""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().patch(
+            f'/instructors/{uid}',
+            json=self.instructors.data.patch_not_unique_email
+        )
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.UNIQUE_EMAIL)
+
+    def test_delete_instructor(self):
+        """Verifies deleting a instructor."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'],
+                         f'{SUCCESS.INSTRUCTOR_DELETED} {uid}')
 
     """ -----------------------------------------------------------------------
     # COURSES ENDPOINT TESTS

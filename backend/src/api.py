@@ -12,8 +12,8 @@ from flask_cors import CORS
 
 # Local application dependencies
 from config.config import setup_db, STATUS_ERR
-from database.models import (Instructor, Assignment, Enrollment)
-from controllers.controllers import (Courses, Students)
+from database.models import (Assignment, Enrollment)
+from controllers.controllers import (Courses, Students, Instructors)
 from helpers.helpers import StatusError, get_detail
 
 
@@ -64,11 +64,11 @@ def create_app():
             # Get response data.
             this_request = request.get_json()
             # Pass response data to controller.
-            this_course = Students(request_data=this_request)
+            this_student = Students(request_data=this_request)
             # Create new student.
-            this_course.create_student()
+            this_student.create_student()
             # Return JSON response.
-            return this_course.response
+            return this_student.response
 
     """ View, edit or delete student by id. """
     @app.route('/students/<uid>', methods=['GET', 'PATCH', 'DELETE'])
@@ -77,7 +77,7 @@ def create_app():
         this_request = request.get_json()
         # Pass response data and student id to controller.
         this_student = Students(request_data=this_request, uid=uid)
-        # Get, patch or delete course and return JSON response.
+        # Get, patch or delete student and return JSON response.
         if request.method == 'GET':
             this_student.get_student()
         elif request.method == 'PATCH':
@@ -87,36 +87,63 @@ def create_app():
         return this_student.response
 
     """ Get courses student is enrolled in. """
-    @app.route('/student/<uid>/coruses', methods=['GET'])
+    @app.route('/student/<uid>/courses', methods=['GET'])
     def view_student_courses():
         return jsonify({
                     'success': False,
                     'message': 'not implemented'
                 }), 501
 
-    # Instructor routes - TODO: Finish Routes
+    # Instructor routes
     # -------------------------------------------------------------------------
-    """ TODO: Finish Implementing Routes"""
-    @app.route('/instructors', methods=['GET', 'POST', 'DELETE'])
-    def view_or_manage_instructors():
+    """ View or create instructors. """
+    @app.route('/instructors', methods=['GET', 'POST'])
+    def view_or_manage_instsructors():
         # Respond to GET request.
-        """ @TODO: implement show instructor list """
+        if request.method == 'GET':
+            # Get detail arguments.
+            detail = get_detail()
+            page = request.args.get('page')
+            # Create Instructors object.
+            this_instructor_list = Instructors()
+            # Get a list of instructors with detail.
+            this_instructor_list.list_instructors(detail=detail, page=page)
+            # Return JSON response
+            return this_instructor_list.response
+        # Respond to POST request.
+        elif request.method == 'POST':
+            # Get response data.
+            this_request = request.get_json()
+            # Pass response data to controller.
+            this_instructor = Instructors(request_data=this_request)
+            # Create new instructor.
+            this_instructor.create_instructor()
+            # Return JSON response.
+            return this_instructor.response
 
-        # Test case for adding instructor.
-        if request.method == 'POST':
-            rand = randint(0, 5000)
+    """ View, edit or delete instructor by id. """
+    @app.route('/instructors/<uid>', methods=['GET', 'PATCH', 'DELETE'])
+    def view_or_manage_instructor(uid):
+        # Get response data.
+        this_request = request.get_json()
+        # Pass response data and instructor id to controller.
+        this_instructor = Instructors(request_data=this_request, uid=uid)
+        # Get, patch or delete instructor and return JSON response.
+        if request.method == 'GET':
+            this_instructor.get_instructor()
+        elif request.method == 'PATCH':
+            this_instructor.edit_instructor()
+        elif request.method == "DELETE":
+            this_instructor.delete_instructor()
+        return this_instructor.response
 
-            this_instructor = Instructor(
-                name='Jane Awesome',
-                email=f'jane_awesome{rand}@university.edu',
-                phone='123-555-0808',
-                bio='Jane Aweomse is an expert on basket weaving and is awes.'
-            )
-            this_instructor.insert()
-            return jsonify({
-                    'success': 'true',
-                    'message': 'instructor created'
-            }), 200
+    """ Get courses instructor is assigned to. """
+    @app.route('/instructor/<uid>/courses', methods=['GET'])
+    def view_instructor_courses():
+        return jsonify({
+                    'success': False,
+                    'message': 'not implemented'
+                }), 501
 
     # Course routes
     # -------------------------------------------------------------------------

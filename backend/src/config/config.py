@@ -114,7 +114,10 @@ SUCCESS = SimpleNamespace(
     COURSE_DELETED='deleted course with id:',
     STUDENT_CREATED='student created',
     STUDENT_EDITED='updated student with id:',
-    STUDENT_DELETED='deleted student with id:'
+    STUDENT_DELETED='deleted student with id:',
+    INSTRUCTOR_CREATED='instructor created',
+    INSTRUCTOR_EDITED='updated instructor with id:',
+    INSTRUCTOR_DELETED='deleted instructor with id:'
 )
 
 STATUS_ERR = SimpleNamespace(

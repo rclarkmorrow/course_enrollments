@@ -8,6 +8,8 @@ from types import SimpleNamespace
 
 # Local application dependencies
 from database.models import Student
+
+
 """ ---------------------------------------------------------------------------
 # TEST DATA CLASS
 # --------------------------------------------------------------------------"""

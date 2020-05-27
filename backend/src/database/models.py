@@ -103,7 +103,7 @@ class Instructor(db.Model):
     assignments = db.relationship('Assignment', back_populates='instructor')
 
     # Methods
-    def __init__(self, name, email, phone, bio):
+    def __init__(self, name=None, email=None, phone=None, bio=None):
         self.name = name
         self.email = email
         self.phone = phone
@@ -120,13 +120,39 @@ class Instructor(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def display(self):
+# Return full details.
+    def full(self):
         return {
             'uid': self.uid,
             'name': self.name,
             'email': self.email,
             'phone': self.phone,
             'bio': self.bio
+        }
+
+    # Return truncated details.
+    def short(self):
+        return {
+            'uid': self.uid,
+            'name': self.name,
+            'bio': self.bio
+        }
+
+    # Return full details with enrollments.
+    def with_assignments(self):
+        return {
+            'uid': self.uid,
+            'name': self.name,
+            'email': self.email,
+            'phone': self.phone,
+            'bio': self.bio,
+            'assignments': [{
+                'uid': assignment.uid,
+                'title': assignment.course.title,
+                'days': assignment.course.days,
+                'start_time': assignment.course.start_time,
+                'end_time': assignment.course.end_time
+            } for assignment in self.assignments]
         }
 
 
@@ -183,7 +209,6 @@ class Course(db.Model):
             'instructors': [{
                 'uid': assignment.instructor.uid,
                 'name': assignment.instructor.name,
-                'email': assignment.instructor.email
             } for assignment in self.assignments],
             'days': (
                 [day.capitalize() for day in self.days.split(',')]
@@ -193,7 +218,7 @@ class Course(db.Model):
             'end time': self.end_time,
             'description': self.description
         }
-        
+
     # Return truncated details.
     def short(self):
         return {
