@@ -7,9 +7,6 @@
 import unittest
 import json
 
-# Third party dependencies
-from flask_sqlalchemy import SQLAlchemy
-
 # Local application dependencies
 from api import create_app
 from config.config import db, setup_db, create_test_db_path
@@ -35,7 +32,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.database_path = create_test_db_path()
         setup_db(self.app, self.database_path)
         self.db = db
-        # Create app context.
+        # Create app context and database.
         self.app_context = self.app.app_context()
         self.app_context.push()
         self.db.create_all()
@@ -82,7 +79,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/bad_endpoint')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
 
@@ -95,7 +92,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/students')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['students']))
@@ -106,7 +103,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/students?page=1')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['students']) < PAGE_LENGTH.STUDENTS + 1)
@@ -119,7 +116,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         response = self.client().get('/students?detail=short')
         data = json.loads(response.data)
         allowed = ['uid', 'name']
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['students']))
@@ -127,11 +124,11 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(self.check_short(data, allowed))
 
     def test_get_students_full(self):
-        """Verifies student records are returned."""
+        """Verifies student records are returned in full form."""
         # Send get request and load results.
         response = self.client().get('/students?detail=full')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['students']))
@@ -142,7 +139,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/students?page=100000')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
@@ -155,7 +152,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.edit_student
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -167,7 +164,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.edit_student
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -179,7 +176,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.edit_student
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify responsedatetime A combination of a date and a time.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -189,7 +186,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/students?detail=junk')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -200,7 +197,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/students?page=0')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -211,7 +208,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/students?page=junk')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -224,7 +221,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.add_student
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], SUCCESS.STUDENT_CREATED)
@@ -236,7 +233,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.missing_key
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -249,7 +246,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.bad_key
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -262,7 +259,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.bad_phone
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -275,7 +272,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.bad_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -289,7 +286,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/students', json=self.students.data.not_unique_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -301,7 +298,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().get(f'/students/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['student'])
@@ -314,7 +311,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             f'/students/{uid}', json=self.students.data.edit_student
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_EDITED} {uid}')
@@ -327,7 +324,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             f'/students/{uid}', json=self.students.data.patch_not_unique_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_EDITED} {uid}')
@@ -338,7 +335,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 100000
         response = self.client().get(f'/students/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
@@ -352,7 +349,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             f'/students/{uid}', json=self.students.data.patch_not_unique_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -364,10 +361,64 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().delete(f'/students/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_DELETED} {uid}')
+
+    def test_get_student_with_courses(self):
+        """Verifies getting a student with courses info."""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().get(f'/students/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['student'])
+        self.assertTrue(data['student']['enrollments'])
+
+    def test_404_get_student_with_courses(self):
+        """Verifies 404 error for non-existent student."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/students/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_405_student_courses_patch_not_allowed(self):
+        """Verifies 405 if patch method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().patch('/students/1/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_405_student_courses_put_not_allowed(self):
+        """Verifies 405 if put method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().put('/students/1/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_405_student_courses_delete_not_allowed(self):
+        """Verifies 405 if delete method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().delete('/students/1/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
     """ -----------------------------------------------------------------------
     # INSTRUCTORS ENDPOINT TESTS
@@ -378,7 +429,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/instructors')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['instructors']))
@@ -389,7 +440,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/instructors?page=1')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['instructors']) < PAGE_LENGTH.INSTRUCTORS + 1)
@@ -402,7 +453,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         response = self.client().get('/instructors?detail=short')
         data = json.loads(response.data)
         allowed = ['uid', 'name', 'bio']
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['instructors']))
@@ -410,11 +461,11 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(self.check_short(data, allowed))
 
     def test_get_instructors_full(self):
-        """Verifies instructor records are returned."""
+        """Verifies instructor records are returned in full form."""
         # Send get request and load results.
         response = self.client().get('/instructors?detail=full')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['instructors']))
@@ -425,7 +476,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/instructors?page=100000')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
@@ -438,7 +489,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.edit_instructor
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -450,7 +501,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.edit_instructor
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -462,7 +513,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.edit_instructor
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -472,7 +523,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/instructors?detail=junk')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response,
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -483,7 +534,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/instructors?page=0')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -494,7 +545,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/instructors?page=junk')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -507,7 +558,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.add_instructor
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], SUCCESS.INSTRUCTOR_CREATED)
@@ -519,7 +570,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.missing_key
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -532,7 +583,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.bad_key
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -545,7 +596,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.bad_phone
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -558,7 +609,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.bad_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -572,7 +623,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/instructors', json=self.instructors.data.not_unique_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -584,7 +635,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().get(f'/instructors/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['instructor'])
@@ -597,7 +648,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             f'/instructors/{uid}', json=self.instructors.data.edit_instructor
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.INSTRUCTOR_EDITED} {uid}')
@@ -611,7 +662,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             json=self.instructors.data.patch_not_unique_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.INSTRUCTOR_EDITED} {uid}')
@@ -622,7 +673,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 100000
         response = self.client().get(f'/instructors/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
@@ -637,7 +688,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             json=self.instructors.data.patch_not_unique_email
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -649,11 +700,66 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().delete(f'/instructors/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'],
                          f'{SUCCESS.INSTRUCTOR_DELETED} {uid}')
+
+    def test_get_instructor_with_courses(self):
+        """Verifies getting an instructor with course info."""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().get(f'/instructors/{uid}/courses')
+        data = json.loads(response.data)
+        print(data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['instructor'])
+        self.assertTrue(data['instructor']['assignments'])
+
+    def test_404_get_instructor_with_courses(self):
+        """Verifies 404 error for non-existent instructor."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/instructors/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_405_instructor_courses_patch_not_allowed(self):
+        """Verifies 405 if patch method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().patch('/instructors/1/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_405_instructor_courses_put_not_allowed(self):
+        """Verifies 405 if put method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().put('/instructors/1/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
+
+    def test_405_instructor_courses_delete_not_allowed(self):
+        """Verifies 405 if delete method attempted on endpoint."""
+        # Send get request and load results.
+        response = self.client().delete('/instructors/1/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
     """ -----------------------------------------------------------------------
     # COURSES ENDPOINT TESTS
@@ -664,7 +770,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['courses']))
@@ -675,7 +781,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses?page=1')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['courses']) < PAGE_LENGTH.COURSES + 1)
@@ -688,7 +794,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         response = self.client().get('/courses?detail=short')
         data = json.loads(response.data)
         allowed = ['uid', 'title']
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['courses']))
@@ -700,7 +806,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses?detail=full')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(len(data['courses']))
@@ -711,7 +817,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses?page=100000')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
@@ -724,7 +830,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.edit_course
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -736,7 +842,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.edit_course
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -748,7 +854,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.edit_course
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 405)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
@@ -758,7 +864,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses?detail=junk')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -769,7 +875,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses?page=0')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -780,7 +886,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Send get request and load results.
         response = self.client().get('/courses?page=junk')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -793,7 +899,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.add_course
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], SUCCESS.COURSE_CREATED)
@@ -805,7 +911,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.missing_key
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -818,7 +924,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.bad_key
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -831,7 +937,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.duplicate_day
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -844,7 +950,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.day_not_list
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -857,7 +963,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.bad_day
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -870,7 +976,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.start_early
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -883,7 +989,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.start_late
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -896,7 +1002,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.start_after_end
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -909,7 +1015,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/courses', json=self.courses.data.bad_time
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
@@ -921,7 +1027,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().get(f'/courses/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['course'])
@@ -934,7 +1040,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             f'/courses/{uid}', json=self.courses.data.edit_course
         )
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_EDITED} {uid}')
@@ -945,7 +1051,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 100000
         response = self.client().get(f'/courses/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
@@ -957,10 +1063,58 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().delete(f'/courses/{uid}')
         data = json.loads(response.data)
-        # Verify response
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_DELETED} {uid}')
+
+    def test_get_course_with_students(self):
+        """Verifies getting a course with students info."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/courses/{uid}/students')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['course'])
+        self.assertTrue(data['course']['students'])
+
+    def test_404_get_course_with_students(self):
+        """Verifies 404 error for non-existent course."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/courses/{uid}/students')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_get_course_with_instructors(self):
+        """Verifies getting a course with instructors info."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/courses/{uid}/instructors')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['course'])
+        self.assertTrue(data['course']['instructors'])
+
+    def test_404_get_course_with_instructors(self):
+        """Verifies 404 error for non-existent course."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/courses/{uid}/instructors')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
 
     """ -----------------------------------------------------------------------
     # ASSIGNMENTS ENDPOINT TESTS
@@ -973,7 +1127,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/assignments', json=self.assignments.data.add_assignment
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.ASSIGNMENT_CREATED}')
@@ -985,7 +1139,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/assignments', json=self.assignments.data.duplicate_assignment
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
@@ -998,7 +1152,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/assignments', json=self.assignments.data.conflict_assignment
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
@@ -1011,7 +1165,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/assignments', json=self.assignments.data.bad_id
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
@@ -1024,7 +1178,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/assignments', json=self.assignments.data.bad_course
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
@@ -1037,7 +1191,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/assignments', json=self.assignments.data.bad_instructor
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
@@ -1049,7 +1203,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 1
         response = self.client().delete(f'/assignments/{uid}')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(
@@ -1062,7 +1216,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 100000
         response = self.client().delete(f'/assignments/{uid}')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
 
@@ -1077,7 +1231,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/enrollments', json=self.enrollments.data.add_enrollment
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.ENROLLMENT_CREATED}')
@@ -1089,7 +1243,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/enrollments', json=self.enrollments.data.duplicate_enrollment
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
@@ -1102,7 +1256,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/enrollments', json=self.enrollments.data.conflict_enrollment
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
@@ -1115,7 +1269,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/enrollments', json=self.enrollments.data.bad_id
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
@@ -1128,7 +1282,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/enrollments', json=self.enrollments.data.bad_course
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
@@ -1141,7 +1295,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             '/enrollments', json=self.enrollments.data.bad_student
         )
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
@@ -1153,7 +1307,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = '1'
         response = self.client().delete(f'/enrollments/{uid}')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(
@@ -1166,7 +1320,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 100000
         response = self.client().delete(f'/enrollments/{uid}')
         data = json.loads(response.data)
-        # Verify responses
+        # Verify response.
         self.assertEqual(response.status_code, 404)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')

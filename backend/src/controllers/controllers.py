@@ -4,7 +4,6 @@
 
 # Standard library dependencies
 import re
-import json  # NOTE: Delete if unused.
 from types import SimpleNamespace
 
 # Third party Dependencies
@@ -29,7 +28,6 @@ class Controller:
     # Init self with data
     def __init__(self, table=None, request_data=None, uid=None):
         self.request_data = request_data
-        # print(request_data)
         self.table = table
         self.uid = uid
         if uid:   # When uid is not one, convert to integer.
@@ -166,6 +164,7 @@ class Controller:
         # the uid of the record, raise an error.
         if query is not None and query.uid != uid:
             raise StatusError(STATUS_ERR.CODE_422, message, 422)
+
     # Verifies that an assignment or enrollment isn't a duplicate and that
     # it doesn't conflict with another assignment or enrollment.
     def verify_schedule(self, course, person):
@@ -265,6 +264,12 @@ class Students(Controller):
         self.response_data.student = self.record.full()
         self.generate_response()
 
+    # Gets a single course record with students
+    def get_student_with_courses(self):
+        self.get_record_by_id()
+        self.response_data.student = self.record.with_enrollments()
+        self.generate_response()
+
     # Creates a new student record.
     def create_student(self):
         # Verify required keys exist in body of JSON request.
@@ -340,10 +345,16 @@ class Instructors(Controller):
         self.response_data.instructors = self.records
         self.generate_response()
 
-    # Gets a single student record
+    # Gets a single instructor record
     def get_instructor(self):
         self.get_record_by_id()
         self.response_data.instructor = self.record.full()
+        self.generate_response()
+
+    # Gets a single instructor record with courses.
+    def get_instructor_with_courses(self):
+        self.get_record_by_id()
+        self.response_data.instructor = self.record.with_assignments()
         self.generate_response()
 
     # Creates a new student record.
@@ -426,6 +437,18 @@ class Courses(Controller):
     def get_course(self):
         self.get_record_by_id()
         self.response_data.course = self.record.full()
+        self.generate_response()
+
+    # Gets a single course record with students
+    def get_course_with_students(self):
+        self.get_record_by_id()
+        self.response_data.course = self.record.with_students()
+        self.generate_response()
+
+    # Gets a single course record with instructors
+    def get_course_with_instructors(self):
+        self.get_record_by_id()
+        self.response_data.course = self.record.with_instructors()
         self.generate_response()
 
     # Creates a new course record.

@@ -41,6 +41,10 @@ class AssignmentTest:
                 course_uid=5,
                 instructor_uid=5,
             ),
+            Assignment(
+                course_uid=1,
+                instructor_uid=2,
+            ),
         ]
         # Data for test cases.
         self.data = SimpleNamespace(

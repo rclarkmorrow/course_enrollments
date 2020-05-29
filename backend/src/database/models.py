@@ -230,6 +230,46 @@ class Course(db.Model):
             'title': self.title
         }
 
+    def with_students(self):
+        return {
+            'uid': self.uid,
+            'title': self.title,
+            'students': [{
+                'uid': enrollment.student.uid,
+                'name': enrollment.student.name,
+                'email': enrollment.student.email,
+                'phone': enrollment.student.phone,
+                'enrollment_uid': enrollment.uid
+            } for enrollment in self.enrollments],
+            'days': (
+                [day.capitalize() for day in self.days.split(',')]
+                if type(self.days) != list else self.days
+                ),
+            'start time': self.start_time,
+            'end time': self.end_time,
+            'description': self.description
+        }
+
+    def with_instructors(self):
+        return {
+            'uid': self.uid,
+            'title': self.title,
+            'instructors': [{
+                'uid': assignment.instructor.uid,
+                'name': assignment.instructor.name,
+                'email': assignment.instructor.email,
+                'phone': assignment.instructor.phone,
+                'assignment_uid': assignment.uid
+            } for assignment in self.assignments],
+            'days': (
+                [day.capitalize() for day in self.days.split(',')]
+                if type(self.days) != list else self.days
+                ),
+            'start time': self.start_time,
+            'end time': self.end_time,
+            'description': self.description
+        }
+
 
 # Assignment Model: Registers instructor to teach a course.
 # ------------------------------------------------------------------------

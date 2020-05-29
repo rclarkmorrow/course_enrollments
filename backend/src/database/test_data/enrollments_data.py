@@ -41,6 +41,10 @@ class EnrollmentTest:
                 course_uid=5,
                 student_uid=5,
             ),
+            Enrollment(
+                course_uid=1,
+                student_uid=2,
+            ),
         ]
         # Data for test cases.
         self.data = SimpleNamespace(

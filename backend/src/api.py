@@ -81,15 +81,18 @@ def create_app():
             this_student.edit_student()
         elif request.method == "DELETE":
             this_student.delete_student()
+        # Return JSON response.
         return this_student.response
 
     """ Get courses student is enrolled in. """
-    @app.route('/student/<uid>/courses', methods=['GET'])
-    def view_student_courses():
-        return jsonify({
-                    'success': False,
-                    'message': 'not implemented'
-                }), 501
+    @app.route('/students/<uid>/courses', methods=['GET'])
+    def view_student_with_courses(uid):
+        # Create Students object.
+        this_student = Students(uid=uid)
+        # Get a list of courses with students detail.
+        this_student.get_student_with_courses()
+        # Return JSON response.
+        return this_student.response
 
     # Instructor routes
     # -------------------------------------------------------------------------
@@ -132,15 +135,18 @@ def create_app():
             this_instructor.edit_instructor()
         elif request.method == "DELETE":
             this_instructor.delete_instructor()
+        # Return JSON response.
         return this_instructor.response
 
     """ Get courses instructor is assigned to. """
-    @app.route('/instructor/<uid>/courses', methods=['GET'])
-    def view_instructor_courses():
-        return jsonify({
-                    'success': False,
-                    'message': 'not implemented'
-                }), 501
+    @app.route('/instructors/<uid>/courses', methods=['GET'])
+    def view_instructor_courses(uid):
+        # Create Students object.
+        this_student = Instructors(uid=uid)
+        # Get a list of courses with students detail.
+        this_student.get_instructor_with_courses()
+        # Return JSON response
+        return this_student.response
 
     # Course routes
     # -------------------------------------------------------------------------
@@ -183,23 +189,28 @@ def create_app():
             this_course.edit_course()
         elif request.method == "DELETE":
             this_course.delete_course()
+        # Return JSON response.
         return this_course.response
 
     """ Get students enrolled in a course. """
     @app.route('/courses/<uid>/students', methods=['GET'])
-    def view_students_enrolled():
-        return jsonify({
-                    'success': False,
-                    'message': 'not implemented'
-                }), 501
+    def view_students_enrolled(uid):
+        # Create Courses object.
+        this_course = Courses(uid=uid)
+        # Get a list of courses with students detail.
+        this_course.get_course_with_students()
+        # Return JSON response.
+        return this_course.response
 
     """ Get instructors assigned to a a course. """
     @app.route('/courses/<uid>/instructors', methods=['GET'])
-    def view_instructors_assigned():
-        return jsonify({
-            'success': False,
-            'message': 'not implemented'
-        }), 501
+    def view_instructors_assigned(uid):
+        # Create Courses object.
+        this_course = Courses(uid=uid)
+        # Get a list of courses with instructors detaildetail.
+        this_course.get_course_with_instructors()
+        # Return JSON response.
+        return this_course.response
 
     # Assignment routes
     # -------------------------------------------------------------------------
