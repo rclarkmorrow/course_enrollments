@@ -11,8 +11,8 @@ from types import SimpleNamespace
 from flask import jsonify
 
 # Local application dependencies
-from database.models import (Student, Instructor, Course,
-                             Assignment, Enrollment)
+from database.models import (Student, Instructor, Course, Assignment,
+                             Enrollment)
 from config.config import REGEX, PAGE_LENGTH, SCHEDULE, STATUS_ERR, SUCCESS
 from helpers.helpers import StatusError
 
@@ -166,6 +166,21 @@ class Controller:
         # the uid of the record, raise an error.
         if query is not None and query.uid != uid:
             raise StatusError(STATUS_ERR.CODE_422, message, 422)
+    # Verifies that an assignment or enrollment isn't a duplicate and that
+    # it doesn't conflict with another assignment or enrollment.
+    def verify_schedule(self, course, person):
+        for record in person:
+            start = record.course.start_time
+            end = record.course.end_time
+            # Verify unique assignment or enrollment.
+            if record.course_uid == self.request_data['course_uid']:
+                raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.DUPLICATE, 422)
+            # Verify that there are no scheduling conflicts.
+            if ((course.start_time > start
+                    and course.start_time < end) or
+                    (course.end_time > start and
+                        course.end_time < end)):
+                raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.CONFLICT, 422)
 
     """ DATABASE HELPERS
     # ----------------------------------------------------------------------"""
@@ -196,19 +211,33 @@ class Controller:
             raise StatusError(STATUS_ERR.CODE_500, STATUS_ERR.GENERIC, 500)
 
     # Get a single record by provided table.
-    def get_record_by_id(self):
-        if self.table:
-            self.record = (self.table.query
-                           .filter(self.table.uid == self.uid)
-                           .one_or_none())
-            if not self.record:
-                raise StatusError(
-                    STATUS_ERR.CODE_404,
-                    STATUS_ERR.NO_RECORD,
-                    404
-                )
-        else:
-            raise StatusError(STATUS_ERR.CODE_500, STATUS_ERR.GENERIC, 500)
+    def get_record_by_id(self, table=None, uid=None):
+        if not table:
+            table = self.table
+            uid = self.uid
+        self.record = (table.query.filter(table.uid == uid).one_or_none())
+        if not self.record:
+            raise StatusError(
+                STATUS_ERR.CODE_404,
+                STATUS_ERR.NO_RECORD,
+                404
+            )
+        return(self.record)
+
+    # Get a course record and a person (Student or Instructor) record from
+    # the databalse with provided details.
+    def get_course_and_person(self, table, person_uid):
+        course = self.get_record_by_id(
+                table=Course,
+                uid=self.request_data['course_uid']
+            )
+        person = self.get_record_by_id(
+                table=table,
+                uid=self.request_data[person_uid]
+            )
+        if not course or not person:
+            raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.INV_ID, 422)
+        return course, person
 
 
 # Controller class for the Student databale model.
@@ -510,3 +539,80 @@ class Courses(Controller):
                 start_time < SCHEDULE.MIN_START or
                 end_time > SCHEDULE.MAX_END):
             raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.INV_TIME, 422)
+
+
+# Controller class for the Assignment databale model.
+# -----------------------------------------------------------------------------
+class Assignments(Controller):
+    # Init self with super.
+    def __init__(self, **kwargs):
+        super().__init__(table=Assignment, **kwargs)
+        # Set valid keys for course record.
+        self.valid_keys = ['course_uid', 'instructor_uid']
+
+    # Create an assignment record.
+    def create_assignment(self):
+        # Verify required keys exist in body of JSON request.
+        self.verify_request_data(self.valid_keys, strict=True)
+        # Verify IDs are or can be converted to integers
+        self.string_to_int(self.request_data['course_uid'])
+        self.string_to_int(self.request_data['instructor_uid'])
+        # Verify request data, then get records if they exist.
+        if (self.request_data['course_uid'] and
+                self.request_data['instructor_uid'] > 0):
+            course, instructor = self.get_course_and_person(
+                Instructor, 'instructor_uid'
+            )
+        # Verify assignment isn't a duplicate and that there are no
+        # schedule conflics.
+        self.verify_schedule(course=course, person=instructor.assignments)
+
+        # Create the Assignment record and insert it.
+        self.create_record()
+        # Generate response.
+        self.response_data.message = SUCCESS.ASSIGNMENT_CREATED
+        self.generate_response()
+
+    # Deletes an Assignment record.
+    def delete_assignment(self):
+        self.delete_record()
+        self.response_data.message = f'{SUCCESS.ASSIGNMENT_DELETED} {self.uid}'
+        self.generate_response()
+
+
+#  Controller class for the Enrollment databale model.
+# -----------------------------------------------------------------------------
+class Enrollments(Controller):
+    # Init self with super.
+    def __init__(self, **kwargs):
+        super().__init__(table=Enrollment, **kwargs)
+        # Set valid keys for course record.
+        self.valid_keys = ['course_uid', 'student_uid']
+
+    # Create an assignment record.
+    def create_enrollment(self):
+        # Verify required keys exist in body of JSON request.
+        self.verify_request_data(self.valid_keys, strict=True)
+        # Verify IDs are or can be converted to integers
+        self.string_to_int(self.request_data['course_uid'])
+        self.string_to_int(self.request_data['student_uid'])
+        # Verify request data, then get records if they exist.
+        if (self.request_data['course_uid'] and
+                self.request_data['student_uid'] > 0):
+            course, student = self.get_course_and_person(
+                Student, 'student_uid'
+            )
+        # Verify enrollment isn't a duplicate and that there are no
+        # schedule conflics.
+        self.verify_schedule(course=course, person=student.enrollments)
+        # Create the Assignment record and insert it.
+        self.create_record()
+        # Generate response.
+        self.response_data.message = SUCCESS.ENROLLMENT_CREATED
+        self.generate_response()
+
+    # Deletes an Assignment record.
+    def delete_enrollment(self):
+        self.delete_record()
+        self.response_data.message = f'{SUCCESS.ENROLLMENT_DELETED} {self.uid}'
+        self.generate_response()

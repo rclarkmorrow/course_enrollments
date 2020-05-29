@@ -110,14 +110,18 @@ SCHEDULE = SimpleNamespace(
 
 SUCCESS = SimpleNamespace(
     COURSE_CREATED='course created',
-    COURSE_EDITED='updated course with id:',
-    COURSE_DELETED='deleted course with id:',
+    COURSE_EDITED='updated course with uid:',
+    COURSE_DELETED='deleted course with uid:',
     STUDENT_CREATED='student created',
-    STUDENT_EDITED='updated student with id:',
-    STUDENT_DELETED='deleted student with id:',
+    STUDENT_EDITED='updated student with uid:',
+    STUDENT_DELETED='deleted student with uid:',
     INSTRUCTOR_CREATED='instructor created',
-    INSTRUCTOR_EDITED='updated instructor with id:',
-    INSTRUCTOR_DELETED='deleted instructor with id:'
+    INSTRUCTOR_EDITED='updated instructor with uid:',
+    INSTRUCTOR_DELETED='deleted instructor with uid:',
+    ASSIGNMENT_CREATED='assignment created',
+    ASSIGNMENT_DELETED='deleted assignment with uid:',
+    ENROLLMENT_CREATED='enrollment created',
+    ENROLLMENT_DELETED='deleted enrollment with uid:'
 )
 
 STATUS_ERR = SimpleNamespace(
@@ -137,11 +141,14 @@ STATUS_ERR = SimpleNamespace(
     DUP_DAY='duplicate days are not allowed',
     DAY_LIST='scheduled days must be provided in list format',
     INV_TIME='the request body contains at least one invalid time',
-    NO_RECORD='record could not be found in database',
+    NO_RECORD='one or more provided uids not found in database',
     NO_RECORDS='no records found in database.',
     BAD_PAGE='the page argument must be an integer above zero.',
     BAD_PHONE='phone numbers must be in formats: 1234567890 or 123-456-7890',
     BAD_EMAIL='the email provided is invalid.',
     UNIQUE_GENERIC='at least one key needs to be a unique value',
-    UNIQUE_EMAIL='email must be a unique value'
+    UNIQUE_EMAIL='email must be a unique value',
+    BAD_ID='uids must be provided as integers',
+    CONFLICT='a course is arleady scheduled for this time',
+    DUPLICATE='a matching record already exists'
 )

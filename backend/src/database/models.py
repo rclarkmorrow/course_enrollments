@@ -29,7 +29,8 @@ class Student(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     phone = db.Column(db.String(120), nullable=False)
     # Relationships
-    enrollments = db.relationship('Enrollment', back_populates='student')
+    enrollments = db.relationship('Enrollment', back_populates='student',
+                                  cascade='all,delete,delete-orphan')
 
     # Methods
     def __init__(self, name=None, email=None, phone=None):
@@ -100,7 +101,8 @@ class Instructor(db.Model):
     bio = db.Column(db.String(1000), nullable=False)
 
     # Relationships
-    assignments = db.relationship('Assignment', back_populates='instructor')
+    assignments = db.relationship('Assignment', back_populates='instructor',
+                                  cascade='all,delete,delete-orphan')
 
     # Methods
     def __init__(self, name=None, email=None, phone=None, bio=None):
@@ -172,8 +174,10 @@ class Course(db.Model):
     description = db.Column(db.String(1000), nullable=False)
 
     # Relationships
-    assignments = db.relationship('Assignment', back_populates='course')
-    enrollments = db.relationship('Enrollment', back_populates='course')
+    assignments = db.relationship('Assignment', back_populates='course',
+                                  cascade='all,delete,delete-orphan')
+    enrollments = db.relationship('Enrollment', back_populates='course',
+                                  cascade='all,delete,delete-orphan')
     # enrollments = db.relationship('Enrollment', back_populates='student',
     #                               lazy=True)
 
@@ -235,8 +239,8 @@ class Assignment (db.Model):
     # Autoincrementing, unique primary key
     uid = db.Column(db.Integer, primary_key=True)
     # Assignment data
-    course_uid = db.Column(db.Integer, db.ForeignKey('course.uid',
-                           ondelete='CASCADE'), nullable=False)
+    course_uid = db.Column(db.Integer, db.ForeignKey('course.uid',),
+                           nullable=False)
     instructor_uid = db.Column(db.Integer, db.ForeignKey('instructor.uid'),
                                nullable=False)
 
@@ -266,8 +270,8 @@ class Enrollment(db.Model):
     # Autoincrementing, unique primary key
     uid = db.Column(db.Integer, primary_key=True)
     # Enrollment data
-    course_uid = db.Column(db.Integer, db.ForeignKey('course.uid',
-                           ondelete='CASCADE'), nullable=False)
+    course_uid = db.Column(db.Integer, db.ForeignKey('course.uid'),
+                           nullable=False)
     student_uid = db.Column(db.Integer, db.ForeignKey('student.uid'),
                             nullable=False)
 

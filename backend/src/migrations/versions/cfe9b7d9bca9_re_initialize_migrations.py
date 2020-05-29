@@ -1,8 +1,8 @@
-"""Initial migration
+"""Re-initialize migrations
 
-Revision ID: 55042cd5d016
+Revision ID: cfe9b7d9bca9
 Revises: 
-Create Date: 2020-05-20 09:38:25.977232
+Create Date: 2020-05-28 19:57:47.854804
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '55042cd5d016'
+revision = 'cfe9b7d9bca9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,7 +22,8 @@ def upgrade():
     sa.Column('uid', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=120), nullable=False),
     sa.Column('days', sa.String(length=240), nullable=False),
-    sa.Column('hour', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.String(length=120), nullable=False),
+    sa.Column('end_time', sa.String(length=120), nullable=False),
     sa.Column('description', sa.String(length=1000), nullable=False),
     sa.PrimaryKeyConstraint('uid')
     )
@@ -45,18 +46,18 @@ def upgrade():
     )
     op.create_table('assignment',
     sa.Column('uid', sa.Integer(), nullable=False),
-    sa.Column('course_id', sa.Integer(), nullable=False),
-    sa.Column('instructor_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['course_id'], ['course.uid'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['instructor_id'], ['instructor.uid'], ),
+    sa.Column('course_uid', sa.Integer(), nullable=False),
+    sa.Column('instructor_uid', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['course_uid'], ['course.uid'], ),
+    sa.ForeignKeyConstraint(['instructor_uid'], ['instructor.uid'], ),
     sa.PrimaryKeyConstraint('uid')
     )
     op.create_table('enrollment',
     sa.Column('uid', sa.Integer(), nullable=False),
-    sa.Column('course_id', sa.Integer(), nullable=False),
-    sa.Column('student_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['course_id'], ['course.uid'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['student_id'], ['student.uid'], ),
+    sa.Column('course_uid', sa.Integer(), nullable=False),
+    sa.Column('student_uid', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['course_uid'], ['course.uid'], ),
+    sa.ForeignKeyConstraint(['student_uid'], ['student.uid'], ),
     sa.PrimaryKeyConstraint('uid')
     )
     # ### end Alembic commands ###

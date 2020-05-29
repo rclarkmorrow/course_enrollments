@@ -3,17 +3,14 @@
 # --------------------------------------------------------------------------"""
 
 
-# Standard library dependencies
-from random import randint  # @TODO: Remove when not needed.
-
 # Third party dependencies
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 # Local application dependencies
 from config.config import setup_db, STATUS_ERR
-from database.models import (Assignment, Enrollment)
-from controllers.controllers import (Courses, Students, Instructors)
+from controllers.controllers import (Courses, Students, Instructors,
+                                     Assignments, Enrollments)
 from helpers.helpers import StatusError, get_detail
 
 
@@ -206,49 +203,51 @@ def create_app():
 
     # Assignment routes
     # -------------------------------------------------------------------------
-    @app.route('/assignment', methods=['POST'])
+    """ Create an assignment. """
+    @app.route('/assignments', methods=['POST'])
     def assign_course():
-        # TEST CASE
-        if request.method == 'POST':
-            this_assignment = Assignment(
-                course_uid=1,
-                instructor_uid=3,
-            )
-            this_assignment.insert()
-            return jsonify({
-                    'success': 'true',
-                    'message': 'assignment created'
-            }), 200
+        # Get response data.
+        this_request = request.get_json()
+        # Pass response data to controller.
+        this_assignment = Assignments(request_data=this_request)
+        # Create new assignment.
+        this_assignment.create_assignment()
+        # Return JSON response.
+        return this_assignment.response
 
-    @app.route('/assignment/<uid>', methods=['DELETE'])
-    def delete_assignment():
-        return jsonify({
-            'success': False,
-            'message': 'not implemented'
-        }), 501
+    """ Delete an Assignment. """
+    @app.route('/assignments/<uid>', methods=['DELETE'])
+    def delete_assignment(uid):
+        # Pass  the enrollment id to controller.
+        this_assignment = Assignments(uid=uid)
+        # Delete the course.
+        this_assignment.delete_assignment()
+        # Return JSON response.
+        return this_assignment.response
 
     # Enrollment routes
     # -------------------------------------------------------------------------
-    @app.route('/enrollment', methods=['POST'])
+    """ Create an enrollment. """
+    @app.route('/enrollments', methods=['POST'])
     def enroll_course():
-        # TEST CASE
-        if request.method == 'POST':
-            this_enrollment = Enrollment(
-                course_uid=1,
-                student_uid=3,
-            )
-            this_enrollment.insert()
-            return jsonify({
-                    'success': 'true',
-                    'message': 'assignment created'
-            }), 200
+        # Get response data.
+        this_request = request.get_json()
+        # Pass response data to controller.
+        this_enrollment = Enrollments(request_data=this_request)
+        # Create new enrollment.
+        this_enrollment.create_enrollment()
+        # Return JSON response.
+        return this_enrollment.response
 
-    @app.route('/enrollment/<uid>', methods=['DELETE'])
-    def delete_enrollment():
-        return jsonify({
-            'success': False,
-            'message': 'not implemented'
-        }), 501
+    """ Delete an enrollment. """
+    @app.route('/enrollments/<uid>', methods=['DELETE'])
+    def delete_enrollment(uid):
+        # Pass  the enrollment id to controller.
+        this_enrollment = Enrollments(uid=uid)
+        # Delete the course.
+        this_enrollment.delete_enrollment()
+        # Return JSON response.
+        return this_enrollment.response
 
     """ ----------------------------------------------------------------------#
     # ERROR_HANDLING

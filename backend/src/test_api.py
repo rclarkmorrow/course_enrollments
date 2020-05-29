@@ -6,7 +6,6 @@
 # Standard library dependencies
 import unittest
 import json
-from types import SimpleNamespace  # NOTE: delete if unused.
 
 # Third party dependencies
 from flask_sqlalchemy import SQLAlchemy
@@ -18,6 +17,8 @@ from config.config import STATUS_ERR, SUCCESS, PAGE_LENGTH
 from database.test_data.courses_data import CourseTest
 from database.test_data.students_data import StudentTest
 from database.test_data.instructors_data import InstructorTest
+from database.test_data.assignments_data import AssignmentTest
+from database.test_data.enrollments_data import EnrollmentTest
 
 
 """ ---------------------------------------------------------------------------
@@ -47,6 +48,12 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         # Add test instructor records to test database.
         self.instructors = InstructorTest()
         self.instructors.create_records()
+        # Add test assignment records to test database.
+        self.assignments = AssignmentTest()
+        self.assignments.create_records()
+        # Add test enrollments records to test database.
+        self.enrollments = EnrollmentTest()
+        self.enrollments.create_records()
 
     # Remove session, drop db tables and tear down app context.
     def tearDown(self):
@@ -954,6 +961,215 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_DELETED} {uid}')
+
+    """ -----------------------------------------------------------------------
+    # ASSIGNMENTS ENDPOINT TESTS
+    # ----------------------------------------------------------------------"""
+
+    def test_post_assignment(self):
+        """Verifies assignment can be posted."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.add_assignment
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.ASSIGNMENT_CREATED}')
+
+    def test_422_post_assignment_duplicate(self):
+        """Verifies 422 with duplicate assignment."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.duplicate_assignment
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.DUPLICATE}')
+
+    def test_422_post_assignment_conflict(self):
+        """Verifies 422 with conflicting assignment."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.conflict_assignment
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.CONFLICT}')
+
+    def test_422_post_assignment_id_str(self):
+        """Verifies 422 with bad course ID."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.bad_id
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.BAD_INT}')
+
+    def test_422_post_assignment_course(self):
+        """Verifies 422 with non-existent ID."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.bad_course
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
+
+    def test_422_post_assignment_instructor(self):
+        """Verifies 422 with non-existent instructor ID."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.bad_instructor
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
+
+    def test_delete_assignment(self):
+        """Verifies deleting assignment by uid."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/assignments/{uid}')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(
+            data['message'], f'{SUCCESS.ASSIGNMENT_DELETED} {uid}'
+        )
+
+    def test_404_delete_assignment(self):
+        """Verifies 404 deleting non-existent assignment."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().delete(f'/assignments/{uid}')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+
+    """ -----------------------------------------------------------------------
+    # ENROLLMENTS ENDPOINT TESTS
+    # ----------------------------------------------------------------------"""
+
+    def test_post_enrollment(self):
+        """Verifies enrollment can be posted."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.add_enrollment
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.ENROLLMENT_CREATED}')
+
+    def test_422_post_enrollment_duplicate(self):
+        """Verifies 422 with duplicate enrollment."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.duplicate_enrollment
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.DUPLICATE}')
+
+    def test_422_post_enrollment_conflict(self):
+        """Verifies 422 with conflicting enrolllment."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.conflict_enrollment
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.CONFLICT}')
+
+    def test_422_post_enrollment_id_str(self):
+        """Verifies 422 with bad ID"""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.bad_id
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.BAD_INT}')
+
+    def test_422_post_enrollment_course(self):
+        """Verifies 422 with bad ID"""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.bad_course
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
+
+    def test_422_post_enrollment_student(self):
+        """Verifies 422 with bad studentr ID."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.bad_student
+        )
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
+
+    def test_delete_enrollment(self):
+        """Verifies delete enrollment record by uid."""
+        # Send get request and load results.
+        uid = '1'
+        response = self.client().delete(f'/enrollments/{uid}')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(
+            data['message'], f'{SUCCESS.ENROLLMENT_DELETED} {uid}'
+        )
+
+    def test_404_delete_enrollment(self):
+        """Verifies 404 deleting non-existent enrollment."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().delete(f'/enrollments/{uid}')
+        data = json.loads(response.data)
+        # Verify responses
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
 
 
 # Make the tests conveniently executable
