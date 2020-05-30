@@ -712,7 +712,6 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         uid = 2
         response = self.client().get(f'/instructors/{uid}/courses')
         data = json.loads(response.data)
-        print(data)
         # Verify response.
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -1044,6 +1043,89 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_EDITED} {uid}')
+
+    def test_edit_course_times(self):
+        """Verifies editing a course."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.edit_course_time
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.COURSE_EDITED} {uid}')
+
+    def test_422_edit_course_invalid_start(self):
+        """Verifies 422 if course data includes an invalid start time."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.start_early
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
+
+    def test_422_edit_course_invalid_end(self):
+        """Verifies 422 if course data includes an invalid end time."""
+        uid = 1
+        # Send get request and load results.
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.start_late
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
+
+    def test_422_edit_course_start_after_end(self):
+        """Verifies 422 if course start time is after end time."""
+        uid = 1
+        # Send get request and load results.
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.start_after_end
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
+
+    def test_422_edit_course_invalid_time(self):
+        """Verifies 422 if course data includes an invalid time."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.bad_time
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_422)
+        self.assertEqual(data['description'], STATUS_ERR.BAD_TIME)
+
+    def test_422_edit_course_conflict(self):
+        """Verifies 422 with conflicting assignment."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.conflict_time
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.CONFLICT}')
 
     def test_404_get_course(self):
         """Verifies 404 error for non-existent course."""

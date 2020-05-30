@@ -74,6 +74,9 @@ class CourseTest:
             edit_course={
                 "description": "Let's change a course description!"
             },
+            edit_course_time={
+                "start_time": "08:00"
+            },
             missing_key={
                 "title": "The Science of Science",
                 "start_time": "14:30",
@@ -165,6 +168,10 @@ class CourseTest:
                 "start_time": "12:30:45",
                 "end_time": "13:30",
                 "description": "There's a science to it."
+            },
+            conflict_time={
+                "start_time": "12:30",
+                "end_time": "13:00"
             }
         )
 

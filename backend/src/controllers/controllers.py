@@ -167,19 +167,25 @@ class Controller:
 
     # Verifies that an assignment or enrollment isn't a duplicate and that
     # it doesn't conflict with another assignment or enrollment.
-    def verify_schedule(self, course, person):
+    def verify_schedule(self, course, person, uid_check=True,
+                        exclude_uid=None):
         for record in person:
             start = record.course.start_time
             end = record.course.end_time
-            # Verify unique assignment or enrollment.
-            if record.course_uid == self.request_data['course_uid']:
-                raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.DUPLICATE, 422)
-            # Verify that there are no scheduling conflicts.
-            if ((course.start_time > start
-                    and course.start_time < end) or
-                    (course.end_time > start and
-                        course.end_time < end)):
-                raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.CONFLICT, 422)
+            if uid_check:
+                # Verify unique assignment or enrollment.
+                if record.course_uid == self.request_data['course_uid']:
+                    raise StatusError(STATUS_ERR.CODE_422,
+                                      STATUS_ERR.DUPLICATE, 422)
+            # Exclude check against provided course_uid.
+            if exclude_uid != record.course.uid:
+                # Verify that there are no scheduling conflicts.
+                if ((course.start_time > start
+                        and course.start_time < end) or
+                        (course.end_time > start and
+                            course.end_time < end)):
+                    raise StatusError(STATUS_ERR.CODE_422,
+                                      STATUS_ERR.CONFLICT, 422)
 
     """ DATABASE HELPERS
     # ----------------------------------------------------------------------"""
@@ -199,7 +205,7 @@ class Controller:
 
     # Gets record by ID and deletes it.
     def delete_record(self):
-        self.get_record_by_id()
+        self.record =self.get_record_by_id()
         self.record.delete()
 
     # Get all records from provided table.
@@ -214,14 +220,14 @@ class Controller:
         if not table:
             table = self.table
             uid = self.uid
-        self.record = (table.query.filter(table.uid == uid).one_or_none())
-        if not self.record:
+        record = (table.query.filter(table.uid == uid).one_or_none())
+        if not record:
             raise StatusError(
                 STATUS_ERR.CODE_404,
                 STATUS_ERR.NO_RECORD,
                 404
             )
-        return(self.record)
+        return(record)
 
     # Get a course record and a person (Student or Instructor) record from
     # the databalse with provided details.
@@ -260,13 +266,13 @@ class Students(Controller):
 
     # Gets a single student record
     def get_student(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.student = self.record.full()
         self.generate_response()
 
     # Gets a single course record with students
     def get_student_with_courses(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.student = self.record.with_enrollments()
         self.generate_response()
 
@@ -294,7 +300,7 @@ class Students(Controller):
     # Updates a student record.
     def edit_student(self):
         # Get the record to edit.
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         # Verify valid keys exists in body of JSON request.
         self.verify_request_data(self.valid_keys)
         # If phone in request, verify it and return format for database.
@@ -347,13 +353,13 @@ class Instructors(Controller):
 
     # Gets a single instructor record
     def get_instructor(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.instructor = self.record.full()
         self.generate_response()
 
     # Gets a single instructor record with courses.
     def get_instructor_with_courses(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.instructor = self.record.with_assignments()
         self.generate_response()
 
@@ -381,7 +387,7 @@ class Instructors(Controller):
     # Updates a student record.
     def edit_instructor(self):
         # Get the record to edit.
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         # Verify valid keys exists in body of JSON request.
         self.verify_request_data(self.valid_keys)
         # If phone in request, verify it and return format for database.
@@ -435,19 +441,19 @@ class Courses(Controller):
 
     # Gets a single course record
     def get_course(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.course = self.record.full()
         self.generate_response()
 
     # Gets a single course record with students
     def get_course_with_students(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.course = self.record.with_students()
         self.generate_response()
 
     # Gets a single course record with instructors
     def get_course_with_instructors(self):
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.response_data.course = self.record.with_instructors()
         self.generate_response()
 
@@ -474,13 +480,13 @@ class Courses(Controller):
         # Verify valid keys exists in body of JSON request.
         self.verify_request_data(self.valid_keys)
         # Get the record to edit.
-        self.get_record_by_id()
+        self.record = self.get_record_by_id()
         # If there are days, verify the days listed in days are allowed and
         # join list as a comma separated string.
         if 'days' in self.request_data.keys():
             self.verify_days()
         # Conditional checks which time keys are in the reponse data, and
-        # uses database record times only one time is in the response data
+        # uses database record times only one time is in the response data.
         if ('start_time' in self.request_data.keys() and 'end_time' in
                 self.request_data.keys()):
             # Verify valid times.
@@ -489,22 +495,32 @@ class Courses(Controller):
             # Verify times are valid for scheduling
             self.verify_course_times(self.request_data['start_time'],
                                      self.request_data['end_time'])
+            # Verify no schedule conflicts.
+            self.verify_schedule_edit(self.request_data['start_time'],
+                                      self.request_data['end_time'])
         elif ('start_time' in self.request_data.keys() and 'end_time' not in
                 self.request_data.keys()):
             # Verify valid times.
             self.verify_time([self.request_data['start_time'],
                               self.record.end_time])
-            # Verify times are valid for scheduling
+            # Verify times are valid for scheduling.
             self.verify_course_times(self.request_data['start_time'],
                                      self.record.end_time)
+            # Verify no schedule conflicts.
+            self.verify_schedule_edit(self.request_data['start_time'],
+                                      self.record.end_time)
         elif ('start_time' not in self.request_data.keys() and 'end_time' in
                 self.request_data.keys()):
             # Verify valid times.
             self.verify_time([self.record.start_time,
                               self.request_data['end_time']])
-            # Verify times are valid for scheduling
+            # Verify times are valid for scheduling.
             self.verify_course_times(self.record.start_time,
                                      self.request_data['end_time'])
+            # Verify no schedule conflicts.
+            self.verify_schedule_edit(self.record.start_time,
+                                      self.request_data['end_time'])
+
         # Build edits to course record and update it.
         self.edit_record()
         # Generate response.
@@ -562,6 +578,27 @@ class Courses(Controller):
                 start_time < SCHEDULE.MIN_START or
                 end_time > SCHEDULE.MAX_END):
             raise StatusError(STATUS_ERR.CODE_422, STATUS_ERR.INV_TIME, 422)
+
+    def verify_schedule_edit(self, new_start, new_end):
+        # Create a course with new times to pass to schedule verifier.
+        course = Course(
+            start_time=new_start,
+            end_time=new_end
+        )
+        # Loop through course's enrollments.
+        for enrollment in self.record.enrollments:
+            # Pass each enrolled student's enrollments to schedule verifier
+            # to verify that course changes do not produce scheduling
+            # conflicts.
+            self.verify_schedule(course, enrollment.student.enrollments,
+                                 uid_check=False, exclude_uid=self.record.uid)
+        # Loop throuh course's assignments.
+        for assignment in self.record.assignments:
+            # Pass each enrolled instructors's assignments to schedule verifier
+            # to verify that course changes do not produce scheduling
+            # conflicts.
+            self.verify_schedule(course, assignment.instructor.assignments,
+                                 uid_check=False, exclude_uid=self.record.uid)
 
 
 # Controller class for the Assignment databale model.
