@@ -49,11 +49,15 @@ def create_test_db_path():
 
 
 """ --------------------------------------------------------------------------#
-# Auth0 Settings
+# AUTH0 SETTINGS
 # --------------------------------------------------------------------------"""
 
 
-# TODO: implement Auth0 settings and include settings for bearer tokens
+AUTH0 = SimpleNamespace(
+    DOMAIN='rclarkmorrow.auth0.com',
+    ALGORITHMS=['RS256'],
+    API_AUDIENCE='course-enrollments-services'
+)
 
 
 """ --------------------------------------------------------------------------#
@@ -125,11 +129,14 @@ SUCCESS = SimpleNamespace(
 )
 
 STATUS_ERR = SimpleNamespace(
+    # Status Code Messages
     CODE_400='bad request',
+    CODE_401='unauthorized',
     CODE_404='resource not found',
     CODE_405='method not allowed',
     CODE_422='request unprocessable',
     CODE_500='internal server error',
+    # Additional error descriptions.
     GENERIC='request could not be processed due to an error',
     BAD_DETAIL=('detail must be full or short, defaults to full with no'
                 ' arguments'),
@@ -150,5 +157,16 @@ STATUS_ERR = SimpleNamespace(
     UNIQUE_EMAIL='email must be a unique value',
     BAD_ID='uids must be provided as integers',
     CONFLICT='a course is arleady scheduled for this time',
-    DUPLICATE='a matching record already exists'
+    DUPLICATE='a matching record already exists',
+    # Authorization error descriptions.
+    HEADER_MISSING='authorization header expected',
+    BEARER_MISSING='authorization header must start with bearer',
+    TOKEN_MISSING='token not found',
+    BEARER_TOKEN='authorization header must be bearer token',
+    PERMISSIONS_MISSING='permissions not included in payload',
+    NOT_AUTHORIZED='token not authorized for this request',
+    TOKEN_EXPIRED='this token has expired',
+    INV_CLAIMS='incorrect claims, please check the audience and issuer',
+    PARSE_TOKEN='unable to parse authentication token',
+    KEY_FIND='unable to find appropriate key'
 )

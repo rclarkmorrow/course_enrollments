@@ -12,6 +12,7 @@ from config.config import setup_db, STATUS_ERR
 from controllers.controllers import (Courses, Students, Instructors,
                                      Assignments, Enrollments)
 from helpers.helpers import StatusError, get_detail
+from auth.auth import requires_auth
 
 
 """ --------------------------------------------------------------------------#
@@ -47,25 +48,32 @@ def create_app():
     def view_or_manage_students():
         # Respond to GET request.
         if request.method == 'GET':
-            # Get detail arguments.
-            detail = get_detail()
-            page = request.args.get('page')
-            # Create Students object.
-            this_student_list = Students()
-            # Get a list of students with detail.
-            this_student_list.list_students(detail=detail, page=page)
-            # Return JSON response
-            return this_student_list.response
+            @requires_auth('get:students')
+            def get_students():
+                # Get detail arguments.
+                detail = get_detail()
+                page = request.args.get('page')
+                # Create Students object.
+                this_student_list = Students()
+                # Get a list of students with detail.
+                this_student_list.list_students(detail=detail, page=page)
+                # Return JSON response
+                return this_student_list.response
+            return get_students()
+
         # Respond to POST request.
         elif request.method == 'POST':
-            # Get response data.
-            this_request = request.get_json()
-            # Pass response data to controller.
-            this_student = Students(request_data=this_request)
-            # Create new student.
-            this_student.create_student()
-            # Return JSON response.
-            return this_student.response
+            @requires_auth('post:student')
+            def post_student():
+                # Get response data.
+                this_request = request.get_json()
+                # Pass response data to controller.
+                this_student = Students(request_data=this_request)
+                # Create new student.
+                this_student.create_student()
+                # Return JSON response.
+                return this_student.response
+            return post_student()
 
     """ View, edit or delete student by id. """
     @app.route('/students/<uid>', methods=['GET', 'PATCH', 'DELETE'])
@@ -76,17 +84,27 @@ def create_app():
         this_student = Students(request_data=this_request, uid=uid)
         # Get, patch or delete student and return JSON response.
         if request.method == 'GET':
-            this_student.get_student()
+            @requires_auth('get:student')
+            def get_student():
+                this_student.get_student()
+            get_student()
         elif request.method == 'PATCH':
-            this_student.edit_student()
+            @requires_auth('patch:student')
+            def patch_student():
+                this_student.edit_student()
+            patch_student()
         elif request.method == "DELETE":
-            this_student.delete_student()
+            @requires_auth('delete:student')
+            def delete_student():
+                this_student.delete_student()
+            delete_student()
         # Return JSON response.
         return this_student.response
 
     """ Get courses student is enrolled in. """
     @app.route('/students/<uid>/courses', methods=['GET'])
-    def view_student_with_courses(uid):
+    @requires_auth('get:student-courses')
+    def view_student_with_courses(payload, uid):
         # Create Students object.
         this_student = Students(uid=uid)
         # Get a list of courses with students detail.
@@ -101,25 +119,31 @@ def create_app():
     def view_or_manage_instsructors():
         # Respond to GET request.
         if request.method == 'GET':
-            # Get detail arguments.
-            detail = get_detail()
-            page = request.args.get('page')
-            # Create Instructors object.
-            this_instructor_list = Instructors()
-            # Get a list of instructors with detail.
-            this_instructor_list.list_instructors(detail=detail, page=page)
-            # Return JSON response
-            return this_instructor_list.response
+            @requires_auth('get:instructors')
+            def get_instructors():
+                # Get detail arguments.
+                detail = get_detail()
+                page = request.args.get('page')
+                # Create Instructors object.
+                this_instructor_list = Instructors()
+                # Get a list of instructors with detail.
+                this_instructor_list.list_instructors(detail=detail, page=page)
+                # Return JSON response
+                return this_instructor_list.response
+            return get_instructors()
         # Respond to POST request.
         elif request.method == 'POST':
-            # Get response data.
-            this_request = request.get_json()
-            # Pass response data to controller.
-            this_instructor = Instructors(request_data=this_request)
-            # Create new instructor.
-            this_instructor.create_instructor()
-            # Return JSON response.
-            return this_instructor.response
+            @requires_auth('post:instructor')
+            def post_instructor():
+                # Get response data.
+                this_request = request.get_json()
+                # Pass response data to controller.
+                this_instructor = Instructors(request_data=this_request)
+                # Create new instructor.
+                this_instructor.create_instructor()
+                # Return JSON response.
+                return this_instructor.response
+            return post_instructor()
 
     """ View, edit or delete instructor by id. """
     @app.route('/instructors/<uid>', methods=['GET', 'PATCH', 'DELETE'])
@@ -130,23 +154,33 @@ def create_app():
         this_instructor = Instructors(request_data=this_request, uid=uid)
         # Get, patch or delete instructor and return JSON response.
         if request.method == 'GET':
-            this_instructor.get_instructor()
+            @requires_auth('get:instructor')
+            def get_instructor():
+                this_instructor.get_instructor()
+            get_instructor()
         elif request.method == 'PATCH':
-            this_instructor.edit_instructor()
+            @requires_auth('patch:instructor')
+            def patch_instructor():
+                this_instructor.edit_instructor()
+            patch_instructor()
         elif request.method == "DELETE":
-            this_instructor.delete_instructor()
+            @requires_auth('delete:instructor')
+            def delete_instructor():
+                this_instructor.delete_instructor()
+            delete_instructor()
         # Return JSON response.
         return this_instructor.response
 
     """ Get courses instructor is assigned to. """
     @app.route('/instructors/<uid>/courses', methods=['GET'])
+    @requires_auth('get:instructor-courses')
     def view_instructor_courses(uid):
         # Create Students object.
-        this_student = Instructors(uid=uid)
+        this_instructor = Instructors(uid=uid)
         # Get a list of courses with students detail.
-        this_student.get_instructor_with_courses()
+        this_instructor.get_instructor_with_courses()
         # Return JSON response
-        return this_student.response
+        return this_instructor.response
 
     # Course routes
     # -------------------------------------------------------------------------
@@ -166,14 +200,17 @@ def create_app():
             return this_course_list.response
         # Respond to POST request.
         elif request.method == 'POST':
-            # Get response data.
-            this_request = request.get_json()
-            # Pass response data to controller.
-            this_course = Courses(request_data=this_request)
-            # Create new course.
-            this_course.create_course()
-            # Return JSON response.
-            return this_course.response
+            @requires_auth('post:course')
+            def post_course():
+                # Get response data.
+                this_request = request.get_json()
+                # Pass response data to controller.
+                this_course = Courses(request_data=this_request)
+                # Create new course.
+                this_course.create_course()
+                # Return JSON response.
+                return this_course.response
+            return post_course()
 
     """ View, edit or delete a course by id. """
     @app.route('/courses/<uid>', methods=['GET', 'PATCH', 'DELETE'])
@@ -186,15 +223,22 @@ def create_app():
         if request.method == 'GET':
             this_course.get_course()
         elif request.method == 'PATCH':
-            this_course.edit_course()
+            @requires_auth('patch:course')
+            def patch_course():
+                this_course.edit_course()
+            patch_course()
         elif request.method == "DELETE":
-            this_course.delete_course()
+            @requires_auth('delete:course')
+            def delete_course():
+                this_course.delete_course()
+            delete_course()
         # Return JSON response.
         return this_course.response
 
     """ Get students enrolled in a course. """
     @app.route('/courses/<uid>/students', methods=['GET'])
-    def view_students_enrolled(uid):
+    @requires_auth('get:course-students')
+    def view_students_enrolled(payload, uid):
         # Create Courses object.
         this_course = Courses(uid=uid)
         # Get a list of courses with students detail.
@@ -204,10 +248,11 @@ def create_app():
 
     """ Get instructors assigned to a a course. """
     @app.route('/courses/<uid>/instructors', methods=['GET'])
-    def view_instructors_assigned(uid):
+    @requires_auth('get:course-instructors')
+    def view_instructors_assigned(payload, uid):
         # Create Courses object.
         this_course = Courses(uid=uid)
-        # Get a list of courses with instructors detaildetail.
+        # Get a list of courses with instructors detail.
         this_course.get_course_with_instructors()
         # Return JSON response.
         return this_course.response
@@ -216,6 +261,7 @@ def create_app():
     # -------------------------------------------------------------------------
     """ Create an assignment. """
     @app.route('/assignments', methods=['POST'])
+    # @requires_auth('post:assignment')
     def assign_course():
         # Get response data.
         this_request = request.get_json()
@@ -228,6 +274,7 @@ def create_app():
 
     """ Delete an Assignment. """
     @app.route('/assignments/<uid>', methods=['DELETE'])
+    # @requires_auth('delete:assignment')
     def delete_assignment(uid):
         # Pass  the enrollment id to controller.
         this_assignment = Assignments(uid=uid)
@@ -240,6 +287,7 @@ def create_app():
     # -------------------------------------------------------------------------
     """ Create an enrollment. """
     @app.route('/enrollments', methods=['POST'])
+    # @requires_auth('post:enrollment')
     def enroll_course():
         # Get response data.
         this_request = request.get_json()
@@ -252,6 +300,7 @@ def create_app():
 
     """ Delete an enrollment. """
     @app.route('/enrollments/<uid>', methods=['DELETE'])
+    # @requires_auth('delete:enrollment')
     def delete_enrollment(uid):
         # Pass  the enrollment id to controller.
         this_enrollment = Enrollments(uid=uid)
@@ -264,15 +313,7 @@ def create_app():
     # ERROR_HANDLING
     # ----------------------------------------------------------------------"""
 
-    """ NOTE: Uncomment when auth0 implemented """
-    # @app.errorhandler(AuthError)
-    # def auth_error(error):
-    #     return jsonify({
-    #         'success': False,
-    #         'error': error.status_code,
-    #         'message': error.error
-    #     }), error.status_code
-
+    # Handles errors passed by the StatusError function.
     @app.errorhandler(StatusError)
     def status_error(error):
         return jsonify({
@@ -282,6 +323,7 @@ def create_app():
             'description': error.description
         }), error.status_code
 
+    # Handles unspecified 400 errors.
     @app.errorhandler(400)
     def bad_request(error):
         return jsonify({
@@ -290,6 +332,7 @@ def create_app():
             'message': STATUS_ERR.CODE_400
         }), 400
 
+    # Handles unspecified 404 errors.
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
@@ -298,6 +341,7 @@ def create_app():
             'message': STATUS_ERR.CODE_404
         }), 404
 
+    # Handles unspecified 405 errors.
     @app.errorhandler(405)
     def method_not_allowed(error):
         return jsonify({
@@ -306,6 +350,7 @@ def create_app():
             'message': STATUS_ERR.CODE_405
         }), 405
 
+    # Handles unspecified 422 errors.
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
@@ -314,6 +359,7 @@ def create_app():
             'message': STATUS_ERR.CODE_422
         }), 422
 
+    # Handles unspecified 500 errors.
     @app.errorhandler(500)
     def server_error(error):
         return jsonify({

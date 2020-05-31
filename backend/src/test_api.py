@@ -87,7 +87,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
     # STUDENTS ENDPOINT TESTS
     # ----------------------------------------------------------------------"""
 
-    def test_get_students_default(self):
+    def test_get_students_default_registrar(self):  # TOKEN REGISTRAR
         """Verifies student records are returned."""
         # Send get request and load results.
         response = self.client().get('/students')
@@ -98,7 +98,18 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(len(data['students']))
         self.assertTrue(data['students'])
 
-    def test_get_students_paginate(self):
+    def test_get_students_default_dean(self):  # TOKEN DEAN
+        """Verifies student records are returned."""
+        # Send get request and load results.
+        response = self.client().get('/students')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['students']))
+        self.assertTrue(data['students'])
+
+    def test_get_students_paginate(self):  # TOKEN DEAN
         """Verifies student records are returned with pagination."""
         # Send get request and load results.
         response = self.client().get('/students?page=1')
@@ -110,7 +121,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['total_records'])
         self.assertTrue(data['students'])
 
-    def test_get_students_short(self):
+    def test_get_students_short(self):  # TOKEN DEAN
         """Verifies student records returned in short form."""
         # Send get request and load results.
         response = self.client().get('/students?detail=short')
@@ -123,7 +134,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['students'])
         self.assertTrue(self.check_short(data, allowed))
 
-    def test_get_students_full(self):
+    def test_get_students_full(self):  # TOKEN DEAN
         """Verifies student records are returned in full form."""
         # Send get request and load results.
         response = self.client().get('/students?detail=full')
@@ -134,7 +145,17 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(len(data['students']))
         self.assertTrue(data['students'])
 
-    def test_404_students_paginate(self):
+    def test_401_get_students(self):
+        """Verifies 401 error when not authorized."""
+        # Send get request and load results.
+        response = self.client().get('/students')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_students_paginate(self):  # TOKEN DEAN
         """Verifies 404 error when page is out of range."""
         # Send get request and load results.
         response = self.client().get('/students?page=100000')
@@ -145,7 +166,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
         self.assertEqual(data['description'], STATUS_ERR.NO_RECORDS)
 
-    def test_405_student_patch_not_allowed(self):
+    def test_405_students_patch_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if patch method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().patch(
@@ -157,7 +178,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_student_put_not_allowed(self):
+    def test_405_students_put_not_allowed(self):   # TOKEN DEAN
         """Verifies 405 if put method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().put(
@@ -169,7 +190,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_student_delete_not_allowed(self):
+    def test_405_students_delete_not_allowed(self):   # TOKEN DEAN
         """Verifies 405 if delete method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().delete(
@@ -181,7 +202,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_422_students_invalid_detail(self):
+    def test_422_students_invalid_detail(self):   # TOKEN DEAN
         """Verifies 422 error with invalide detail argument."""
         # Send get request and load results.
         response = self.client().get('/students?detail=junk')
@@ -192,7 +213,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_DETAIL)
 
-    def test_422_students_invalid_page_zero(self):
+    def test_422_students_invalid_page_zero(self):   # TOKEN DEAN
         """Verifies 422 error when page argument is zero."""
         # Send get request and load results.
         response = self.client().get('/students?page=0')
@@ -203,7 +224,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_PAGE)
 
-    def test_422_students_invalid_page_argument(self):
+    def test_422_students_invalid_page_argument(self):  # TOKEN DEAN
         """Verifies 422 error when page argument is not integer."""
         # Send get request and load results.
         response = self.client().get('/students?page=junk')
@@ -214,7 +235,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_INT)
 
-    def test_create_student(self):
+    def test_create_student_registrar(self):  # TOKEN REGISTRAR
         """Verifies creating a new student."""
         # Send get request and load results.
         response = self.client().post(
@@ -226,7 +247,30 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], SUCCESS.STUDENT_CREATED)
 
-    def test_422_create_student_missing_key(self):
+    def test_create_student_dean(self):  # TOKEN DEAN
+        """Verifies creating a new student."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/students', json=self.students.data.add_student
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], SUCCESS.STUDENT_CREATED)
+
+    def test_401_create_student(self):
+        """Verifies 401 error when not authorized."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/students', json=self.students.data.add_student)
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_422_create_student_missing_key(self):  # TOKEN DEAN
         """Verifies 422 if student data is missing a key."""
         # Send get request and load results.
         response = self.client().post(
@@ -239,7 +283,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.MISSING_KEY)
 
-    def test_422_create_student_invalid_key(self):
+    def test_422_create_student_invalid_key(self):  # TOKEN DEAN
         """Verifies 422 if student data includes invalid key."""
         # Send get request and load results.
         response = self.client().post(
@@ -252,7 +296,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_KEY)
 
-    def test_422_create_student_invalid_phone(self):
+    def test_422_create_student_invalid_phone(self):  # TOKEN DEAN
         """Verifies 422 if student data includes invalid phone."""
         # Send get request and load results.
         response = self.client().post(
@@ -265,7 +309,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_PHONE)
 
-    def test_422_create_student_invalid_email(self):
+    def test_422_create_student_invalid_email(self):  # TOKEN DEAN
         """Verifies 422 if student data includes invalid email."""
         # Send get request and load results.
         response = self.client().post(
@@ -278,7 +322,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_EMAIL)
 
-    def test_422_create_student_not_unique_email(self):
+    def test_422_create_student_not_unique_email(self):  # TOKEN DEAN
         """Verifies 422 if student data includes an email
            that is not unique."""
         # Send get request and load results.
@@ -292,7 +336,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.UNIQUE_EMAIL)
 
-    def test_get_student(self):
+    def test_get_student_registrar(self):  # TOKEN REGISTRAR
         """Verifies getting a student."""
         # Send get request and load results.
         uid = 1
@@ -303,7 +347,41 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['student'])
 
-    def test_edit_student(self):
+    def test_get_student_dean(self):  # TOKEN DEAN
+        """Verifies getting a student."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/students/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['student'])
+
+    def test_401_get_student(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/students/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_get_student(self):  # TOKEN DEAN
+        """Verifies 404 error for non-existent student."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/students/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_edit_student_registrar(self):  # TOKEN REGISTRAR
         """Verifies editing a student."""
         # Send get request and load results.
         uid = 1
@@ -316,8 +394,34 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_EDITED} {uid}')
 
-    def test_edit_student_email_self_match(self):
-        """Verifies 422 editing a student with email that is not unique"""
+    def test_edit_student_dean(self):  # TOKEN DEAN
+        """Verifies editing a student."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/students/{uid}', json=self.students.data.edit_student
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.STUDENT_EDITED} {uid}')
+
+    def test_401_edit_student(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/students/{uid}', json=self.students.data.edit_student
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_edit_student_email_self_match(self):  # TOKEN DEAN
+        """Tests editing a student using an email matching current email."""
         # Send get request and load results.
         uid = 1
         response = self.client().patch(
@@ -329,20 +433,8 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_EDITED} {uid}')
 
-    def test_404_get_student(self):
-        """Verifies 404 error for non-existent student."""
-        # Send get request and load results.
-        uid = 100000
-        response = self.client().get(f'/students/{uid}')
-        data = json.loads(response.data)
-        # Verify response.
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
-        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
-
-    def test_422_edit_student(self):
-        """Verifies 422 editing a student with email that is not unique"""
+    def test_422_edit_student(self):  # TOKEN DEAN
+        """Verifies 422 editing a student with email that is not unique."""
         # Send get request and load results.
         uid = 2
         response = self.client().patch(
@@ -355,7 +447,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.UNIQUE_EMAIL)
 
-    def test_delete_student(self):
+    def test_delete_student_registrar(self):  # TOKEN REGISTRAR
         """Verifies deleting a student."""
         # Send get request and load results.
         uid = 1
@@ -366,7 +458,29 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.STUDENT_DELETED} {uid}')
 
-    def test_get_student_with_courses(self):
+    def test_delete_student_dean(self):  # TOKEN DEAN
+        """Verifies deleting a student."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/students/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.STUDENT_DELETED} {uid}')
+
+    def test_401_delete_student(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/students/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_get_student_with_courses_registrar(self):  # TOKEN REGISTRAR
         """Verifies getting a student with courses info."""
         # Send get request and load results.
         uid = 2
@@ -378,7 +492,30 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['student'])
         self.assertTrue(data['student']['enrollments'])
 
-    def test_404_get_student_with_courses(self):
+    def test_get_student_with_courses_dean(self):  # TOKEN DEAN
+        """Verifies getting a student with courses info."""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().get(f'/students/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['student'])
+        self.assertTrue(data['student']['enrollments'])
+
+    def test_401_get_student_with_courses(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().get(f'/students/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_get_student_with_courses(self):  # TOKEN DEAN
         """Verifies 404 error for non-existent student."""
         # Send get request and load results.
         uid = 100000
@@ -390,7 +527,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
         self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
 
-    def test_405_student_courses_patch_not_allowed(self):
+    def test_405_student_courses_patch_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if patch method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().patch('/students/1/courses')
@@ -400,7 +537,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_student_courses_put_not_allowed(self):
+    def test_405_student_courses_put_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if put method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().put('/students/1/courses')
@@ -410,7 +547,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_student_courses_delete_not_allowed(self):
+    def test_405_student_courses_delete_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if delete method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().delete('/students/1/courses')
@@ -424,7 +561,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
     # INSTRUCTORS ENDPOINT TESTS
     # ----------------------------------------------------------------------"""
 
-    def test_get_instructors_default(self):
+    def test_get_instructors_default_registrar(self):  # TOKEN REGISTRAR
         """Verifies instructor records are returned."""
         # Send get request and load results.
         response = self.client().get('/instructors')
@@ -435,7 +572,18 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(len(data['instructors']))
         self.assertTrue(data['instructors'])
 
-    def test_get_instructors_paginate(self):
+    def test_get_instructors_default_dean(self):  # TOKEN DEAN
+        """Verifies instructor records are returned."""
+        # Send get request and load results.
+        response = self.client().get('/instructors')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['instructors']))
+        self.assertTrue(data['instructors'])
+
+    def test_get_instructors_paginate(self):  # TOKEN DEAN
         """Verifies instructor records are returned with pagination."""
         # Send get request and load results.
         response = self.client().get('/instructors?page=1')
@@ -447,7 +595,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['total_records'])
         self.assertTrue(data['instructors'])
 
-    def test_get_instructors_short(self):
+    def test_get_instructors_short(self):  # TOKEN DEAN
         """Verifies instructor records returned in short form."""
         # Send get request and load results.
         response = self.client().get('/instructors?detail=short')
@@ -460,7 +608,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['instructors'])
         self.assertTrue(self.check_short(data, allowed))
 
-    def test_get_instructors_full(self):
+    def test_get_instructors_full(self):  # TOKEN DEAN
         """Verifies instructor records are returned in full form."""
         # Send get request and load results.
         response = self.client().get('/instructors?detail=full')
@@ -471,7 +619,17 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(len(data['instructors']))
         self.assertTrue(data['instructors'])
 
-    def test_404_instructors_paginate(self):
+    def test_401_get_instructors_default(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        response = self.client().get('/instructors')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_instructors_paginate(self):  # TOKEN DEAN
         """Verifies 404 error when page is out of range."""
         # Send get request and load results.
         response = self.client().get('/instructors?page=100000')
@@ -482,7 +640,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
         self.assertEqual(data['description'], STATUS_ERR.NO_RECORDS)
 
-    def test_405_instructor_patch_not_allowed(self):
+    def test_405_instructors_patch_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if patch method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().patch(
@@ -494,7 +652,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_instructor_put_not_allowed(self):
+    def test_405_instructors_put_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if put method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().put(
@@ -506,7 +664,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_instructor_delete_not_allowed(self):
+    def test_405_instructors_delete_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if delete method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().delete(
@@ -518,7 +676,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_422_instructors_invalid_detail(self):
+    def test_422_instructors_invalid_detail(self):  # TOKEN DEAN
         """Verifies 422 error with invalide detail argument."""
         # Send get request and load results.
         response = self.client().get('/instructors?detail=junk')
@@ -529,7 +687,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_DETAIL)
 
-    def test_422_instructors_invalid_page_zero(self):
+    def test_422_instructors_invalid_page_zero(self):  # TOKEN DEAN
         """Verifies 422 error when page argument is zero."""
         # Send get request and load results.
         response = self.client().get('/instructors?page=0')
@@ -540,7 +698,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_PAGE)
 
-    def test_422_instructors_invalid_page_argument(self):
+    def test_422_instructors_invalid_page_argument(self):  # TOKEN DEAN
         """Verifies 422 error when page argument is not integer."""
         # Send get request and load results.
         response = self.client().get('/instructors?page=junk')
@@ -551,7 +709,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_INT)
 
-    def test_create_instructor(self):
+    def test_create_instructor(self):  # TOKEN DEAN
         """Verifies creating a new instructor."""
         # Send get request and load results.
         response = self.client().post(
@@ -563,7 +721,19 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], SUCCESS.INSTRUCTOR_CREATED)
 
-    def test_422_create_instructor_missing_key(self):
+    def test_401_create_instructor(self):  # TOKEN DEAN
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/instructors', json=self.instructors.data.add_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_422_create_instructor_missing_key(self):  # TOKEN DEAN
         """Verifies 422 if instructor data is missing a key."""
         # Send get request and load results.
         response = self.client().post(
@@ -576,7 +746,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.MISSING_KEY)
 
-    def test_422_create_instructor_invalid_key(self):
+    def test_422_create_instructor_invalid_key(self):  # TOKEN DEAN
         """Verifies 422 if instructor data includes invalid key."""
         # Send get request and load results.
         response = self.client().post(
@@ -589,7 +759,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_KEY)
 
-    def test_422_create_instructor_invalid_phone(self):
+    def test_422_create_instructor_invalid_phone(self):  # TOKEN DEAN
         """Verifies 422 if instructor data includes invalid phone."""
         # Send get request and load results.
         response = self.client().post(
@@ -602,7 +772,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_PHONE)
 
-    def test_422_create_instructor_invalid_email(self):
+    def test_422_create_instructor_invalid_email(self):  # TOKEN DEAN
         """Verifies 422 if instructor data includes invalid email."""
         # Send get request and load results.
         response = self.client().post(
@@ -615,7 +785,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_EMAIL)
 
-    def test_422_create_instructor_not_unique_email(self):
+    def test_422_create_instructor_not_unique_email(self):  # TOKEN DEAN
         """Verifies 422 if instructor data includes an email
            that is not unique."""
         # Send get request and load results.
@@ -629,7 +799,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.UNIQUE_EMAIL)
 
-    def test_get_instructor(self):
+    def test_get_instructor_registrar(self):  # TOKEN REGISTRAR
         """Verifies getting a instructor."""
         # Send get request and load results.
         uid = 1
@@ -640,7 +810,41 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['instructor'])
 
-    def test_edit_instructor(self):
+    def test_get_instructor_dean(self):  # TOKEN DEAN
+        """Verifies getting a instructor."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['instructor'])
+
+    def test_401_get_instructor(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['instructor'])
+
+    def test_404_get_instructor(self):  # TOKEN DEAN
+        """Verifies 404 error for non-existent instructor."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_edit_instructor(self):  # TOKEN DEAN
         """Verifies editing a instructor."""
         # Send get request and load results.
         uid = 1
@@ -653,7 +857,20 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.INSTRUCTOR_EDITED} {uid}')
 
-    def test_edit_instructor_email_self_match(self):
+    def test_401_edit_instructor(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/instructors/{uid}', json=self.instructors.data.edit_instructor
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_edit_instructor_email_self_match(self):  # TOKEN DEAN
         """Verifies 422 editing a instructor with email that is not unique"""
         # Send get request and load results.
         uid = 1
@@ -667,19 +884,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.INSTRUCTOR_EDITED} {uid}')
 
-    def test_404_get_instructor(self):
-        """Verifies 404 error for non-existent instructor."""
-        # Send get request and load results.
-        uid = 100000
-        response = self.client().get(f'/instructors/{uid}')
-        data = json.loads(response.data)
-        # Verify response.
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
-        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
-
-    def test_422_edit_instructor(self):
+    def test_422_edit_instructor(self):  # TOKEN DEAN
         """Verifies 422 editing a instructor with email that is not unique"""
         # Send get request and load results.
         uid = 2
@@ -694,7 +899,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.UNIQUE_EMAIL)
 
-    def test_delete_instructor(self):
+    def test_delete_instructor(self):  # TOKEN DEAN
         """Verifies deleting a instructor."""
         # Send get request and load results.
         uid = 1
@@ -706,7 +911,18 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'],
                          f'{SUCCESS.INSTRUCTOR_DELETED} {uid}')
 
-    def test_get_instructor_with_courses(self):
+    def test_401_delete_instructor(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/instructors/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_get_instructor_with_courses_registrar(self):  # TOKEN REGISTRAR
         """Verifies getting an instructor with course info."""
         # Send get request and load results.
         uid = 2
@@ -718,7 +934,30 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['instructor'])
         self.assertTrue(data['instructor']['assignments'])
 
-    def test_404_get_instructor_with_courses(self):
+    def test_get_instructor_with_courses_dean(self):  # TOKEN DEAN
+        """Verifies getting an instructor with course info."""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().get(f'/instructors/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['instructor'])
+        self.assertTrue(data['instructor']['assignments'])
+
+    def test_401_get_instructor_with_courses(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 2
+        response = self.client().get(f'/instructors/{uid}/courses')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_get_instructor_with_courses(self): # TOKEN DEAN
         """Verifies 404 error for non-existent instructor."""
         # Send get request and load results.
         uid = 100000
@@ -730,7 +969,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
         self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
 
-    def test_405_instructor_courses_patch_not_allowed(self):
+    def test_405_instructor_courses_patch_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if patch method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().patch('/instructors/1/courses')
@@ -740,7 +979,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_instructor_courses_put_not_allowed(self):
+    def test_405_instructor_courses_put_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if put method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().put('/instructors/1/courses')
@@ -750,7 +989,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], STATUS_ERR.CODE_405)
 
-    def test_405_instructor_courses_delete_not_allowed(self):
+    def test_405_instructor_courses_delete_not_allowed(self):  # TOKEN DEAN
         """Verifies 405 if delete method attempted on endpoint."""
         # Send get request and load results.
         response = self.client().delete('/instructors/1/courses')
@@ -891,7 +1130,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_INT)
 
-    def test_create_course(self):
+    def test_create_course_instructor(self):  # TOKEN INSTRUCTOR
         """Verifies creating a new course."""
         # Send get request and load results.
         response = self.client().post(
@@ -903,7 +1142,31 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], SUCCESS.COURSE_CREATED)
 
-    def test_422_create_course_missing_key(self):
+    def test_create_course_dean(self):  # TOKEN INSTRUCTOR
+        """Verifies creating a new course."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/courses', json=self.courses.data.add_course
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], SUCCESS.COURSE_CREATED)
+
+    def test_401_create_course(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/courses', json=self.courses.data.add_course
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_422_create_course_missing_key(self):  # TOKEN DEAN
         """Verifies 422 if course data is missing a key."""
         # Send get request and load results.
         response = self.client().post(
@@ -916,7 +1179,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.MISSING_KEY)
 
-    def test_422_create_course_invalid_key(self):
+    def test_422_create_course_invalid_key(self):  # TOKEN DEAN
         """Verifies 422 if course data includes invalid key."""
         # Send get request and load results.
         response = self.client().post(
@@ -929,7 +1192,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_KEY)
 
-    def test_422_create_course_duplicate_day(self):
+    def test_422_create_course_duplicate_day(self):  # TOKEN DEAN
         """Verifies 422 if course data includes a duplicate day."""
         # Send get request and load results.
         response = self.client().post(
@@ -942,7 +1205,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.DUP_DAY)
 
-    def test_422_create_course_day_not_list(self):
+    def test_422_create_course_day_not_list(self):  # TOKEN DEAN
         """Verifies 422 if course days are not provided as a list."""
         # Send get request and load results.
         response = self.client().post(
@@ -955,7 +1218,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.DAY_LIST)
 
-    def test_422_create_course_invalid_day(self):
+    def test_422_create_course_invalid_day(self):  # TOKEN DEAN
         """Verifies 422 if course data includes an invalid day."""
         # Send get request and load results.
         response = self.client().post(
@@ -968,7 +1231,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_DAY)
 
-    def test_422_create_course_invalid_start(self):
+    def test_422_create_course_invalid_start(self):  # TOKEN DEAN
         """Verifies 422 if course data includes an invalid start time."""
         # Send get request and load results.
         response = self.client().post(
@@ -981,7 +1244,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
 
-    def test_422_create_course_invalid_end(self):
+    def test_422_create_course_invalid_end(self):  # TOKEN DEAN
         """Verifies 422 if course data includes an invalid end time."""
         # Send get request and load results.
         response = self.client().post(
@@ -994,7 +1257,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
 
-    def test_422_create_course_start_after_end(self):
+    def test_422_create_course_start_after_end(self):  # TOKEN DEAN
         """Verifies 422 if course start time is after end time."""
         # Send get request and load results.
         response = self.client().post(
@@ -1007,7 +1270,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
 
-    def test_422_create_course_invalid_time(self):
+    def test_422_create_course_invalid_time(self):  # TOKEN DEAN
         """Verifies 422 if course data includes an invalid time."""
         # Send get request and load results.
         response = self.client().post(
@@ -1031,7 +1294,19 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['course'])
 
-    def test_edit_course(self):
+    def test_404_get_course(self):
+        """Verifies 404 error for non-existent course."""
+        # Send get request and load results.
+        uid = 100000
+        response = self.client().get(f'/courses/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
+        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
+
+    def test_edit_course_instructor(self):   # TOKEN INSTRUCTOR
         """Verifies editing a course."""
         # Send get request and load results.
         uid = 1
@@ -1044,7 +1319,20 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_EDITED} {uid}')
 
-    def test_edit_course_times(self):
+    def test_edit_course_dean(self):   # TOKEN DEAN
+        """Verifies editing a course."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.edit_course
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.COURSE_EDITED} {uid}')
+
+    def test_edit_course_times(self):    # TOKEN DEAN
         """Verifies editing a course."""
         # Send get request and load results.
         uid = 1
@@ -1057,7 +1345,20 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_EDITED} {uid}')
 
-    def test_422_edit_course_invalid_start(self):
+    def test_401_edit_course(self):
+        """Verifies 401 when not authorized"""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().patch(
+            f'/courses/{uid}', json=self.courses.data.edit_course
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_422_edit_course_invalid_start(self):    # TOKEN DEAN
         """Verifies 422 if course data includes an invalid start time."""
         # Send get request and load results.
         uid = 1
@@ -1071,7 +1372,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
 
-    def test_422_edit_course_invalid_end(self):
+    def test_422_edit_course_invalid_end(self):    # TOKEN DEAN
         """Verifies 422 if course data includes an invalid end time."""
         uid = 1
         # Send get request and load results.
@@ -1085,7 +1386,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
 
-    def test_422_edit_course_start_after_end(self):
+    def test_422_edit_course_start_after_end(self):   # TOKEN DEAN
         """Verifies 422 if course start time is after end time."""
         uid = 1
         # Send get request and load results.
@@ -1099,7 +1400,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.INV_TIME)
 
-    def test_422_edit_course_invalid_time(self):
+    def test_422_edit_course_invalid_time(self):   # TOKEN DEAN
         """Verifies 422 if course data includes an invalid time."""
         # Send get request and load results.
         uid = 1
@@ -1113,7 +1414,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_422)
         self.assertEqual(data['description'], STATUS_ERR.BAD_TIME)
 
-    def test_422_edit_course_conflict(self):
+    def test_422_edit_course_conflict(self):   # TOKEN DEAN
         """Verifies 422 with conflicting assignment."""
         # Send get request and load results.
         uid = 1
@@ -1127,19 +1428,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.CONFLICT}')
 
-    def test_404_get_course(self):
-        """Verifies 404 error for non-existent course."""
-        # Send get request and load results.
-        uid = 100000
-        response = self.client().get(f'/courses/{uid}')
-        data = json.loads(response.data)
-        # Verify response.
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], STATUS_ERR.CODE_404)
-        self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
-
-    def test_delete_course(self):
+    def test_delete_course(self):    # TOKEN DEAN
         """Verifies deleting a course."""
         # Send get request and load results.
         uid = 1
@@ -1150,7 +1439,18 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.COURSE_DELETED} {uid}')
 
-    def test_get_course_with_students(self):
+    def test_401_delete_course(self):
+        """Verifies 401 when not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/courses/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_get_course_with_students_registrar(self):  # TOKEN REGISTRAR
         """Verifies getting a course with students info."""
         # Send get request and load results.
         uid = 1
@@ -1162,7 +1462,19 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertTrue(data['course'])
         self.assertTrue(data['course']['students'])
 
-    def test_404_get_course_with_students(self):
+    def test_get_course_with_students_dean(self):  # TOKEN DEAN
+        """Verifies getting a course with students info."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/courses/{uid}/students')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['course'])
+        self.assertTrue(data['course']['students'])
+
+    def test_404_get_course_with_students(self):  # TOKEN DEAN
         """Verifies 404 error for non-existent course."""
         # Send get request and load results.
         uid = 100000
@@ -1174,7 +1486,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], STATUS_ERR.CODE_404)
         self.assertEqual(data['description'], STATUS_ERR.NO_RECORD)
 
-    def test_get_course_with_instructors(self):
+    def test_get_course_with_instructors_registrar(self):  # TOKEN REGISTRAR
         """Verifies getting a course with instructors info."""
         # Send get request and load results.
         uid = 1
@@ -1185,6 +1497,29 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertTrue(data['course'])
         self.assertTrue(data['course']['instructors'])
+
+    def test_get_course_with_instructors_dean(self):  # TOKEN DEAN
+        """Verifies getting a course with instructors info."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/courses/{uid}/instructors')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['course'])
+        self.assertTrue(data['course']['instructors'])
+
+    def test_401_get_course_with_instructors(self):
+        """Verifies 401 not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().get(f'/courses/{uid}/instructors')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
 
     def test_404_get_course_with_instructors(self):
         """Verifies 404 error for non-existent course."""
@@ -1202,7 +1537,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
     # ASSIGNMENTS ENDPOINT TESTS
     # ----------------------------------------------------------------------"""
 
-    def test_post_assignment(self):
+    def test_post_assignment(self):  # TOKEN DEAN
         """Verifies assignment can be posted."""
         # Send get request and load results.
         response = self.client().post(
@@ -1214,7 +1549,19 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.ASSIGNMENT_CREATED}')
 
-    def test_422_post_assignment_duplicate(self):
+    def test_401_post_assignment(self):  # TOKEN DEAN
+        """Verifies 401 not authorized."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/assignments', json=self.assignments.data.add_assignment
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_422_post_assignment_duplicate(self):  # TOKEN DEAN
         """Verifies 422 with duplicate assignment."""
         # Send get request and load results.
         response = self.client().post(
@@ -1227,7 +1574,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.DUPLICATE}')
 
-    def test_422_post_assignment_conflict(self):
+    def test_422_post_assignment_conflict(self):  # TOKEN DEAN
         """Verifies 422 with conflicting assignment."""
         # Send get request and load results.
         response = self.client().post(
@@ -1240,7 +1587,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.CONFLICT}')
 
-    def test_422_post_assignment_id_str(self):
+    def test_422_post_assignment_id_str(self):  # TOKEN DEAN
         """Verifies 422 with bad course ID."""
         # Send get request and load results.
         response = self.client().post(
@@ -1253,7 +1600,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.BAD_INT}')
 
-    def test_422_post_assignment_course(self):
+    def test_422_post_assignment_course(self):  # TOKEN DEAN
         """Verifies 422 with non-existent ID."""
         # Send get request and load results.
         response = self.client().post(
@@ -1266,7 +1613,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
         self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
 
-    def test_422_post_assignment_instructor(self):
+    def test_422_post_assignment_instructor(self):  # TOKEN DEAN
         """Verifies 422 with non-existent instructor ID."""
         # Send get request and load results.
         response = self.client().post(
@@ -1279,7 +1626,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
         self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
 
-    def test_delete_assignment(self):
+    def test_delete_assignment(self):  # TOKEN DEAN
         """Verifies deleting assignment by uid."""
         # Send get request and load results.
         uid = 1
@@ -1292,7 +1639,18 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             data['message'], f'{SUCCESS.ASSIGNMENT_DELETED} {uid}'
         )
 
-    def test_404_delete_assignment(self):
+    def test_401_delete_assignment(self):
+        """Verifies 401 not authorized."""
+        # Send get request and load results.
+        uid = 1
+        response = self.client().delete(f'/assignments/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_delete_assignment(self):  # TOKEN DEAN
         """Verifies 404 deleting non-existent assignment."""
         # Send get request and load results.
         uid = 100000
@@ -1306,7 +1664,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
     # ENROLLMENTS ENDPOINT TESTS
     # ----------------------------------------------------------------------"""
 
-    def test_post_enrollment(self):
+    def test_post_enrollment_registrar(self):  # TOKEN REGISTRAR
         """Verifies enrollment can be posted."""
         # Send get request and load results.
         response = self.client().post(
@@ -1318,7 +1676,57 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['message'], f'{SUCCESS.ENROLLMENT_CREATED}')
 
-    def test_422_post_enrollment_duplicate(self):
+    def test_post_enrollment_dean(self):  # TOKEN DEAN
+        """Verifies enrollment can be posted."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.add_enrollment
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(data['message'], f'{SUCCESS.ENROLLMENT_CREATED}')
+
+    def test_401_post_enrollment_dean(self):
+        """Verifies 401 not authorized."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.add_enrollment
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_post_enrollment_course(self):  # TOKEN DEAN
+        """Verifies 422 with bad course ID"""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.bad_course
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
+
+    def test_404_post_enrollment_student(self):  # TOKEN DEAN
+        """Verifies 422 with bad student ID."""
+        # Send get request and load results.
+        response = self.client().post(
+            '/enrollments', json=self.enrollments.data.bad_student
+        )
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
+        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
+
+    def test_422_post_enrollment_duplicate(self):  # TOKEN DEAN
         """Verifies 422 with duplicate enrollment."""
         # Send get request and load results.
         response = self.client().post(
@@ -1331,7 +1739,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.DUPLICATE}')
 
-    def test_422_post_enrollment_conflict(self):
+    def test_422_post_enrollment_conflict(self):  # TOKEN DEAN
         """Verifies 422 with conflicting enrolllment."""
         # Send get request and load results.
         response = self.client().post(
@@ -1344,7 +1752,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.CONFLICT}')
 
-    def test_422_post_enrollment_id_str(self):
+    def test_422_post_enrollment_id_str(self):  # TOKEN DEAN
         """Verifies 422 with bad ID"""
         # Send get request and load results.
         response = self.client().post(
@@ -1357,33 +1765,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
         self.assertEqual(data['message'], f'{STATUS_ERR.CODE_422}')
         self.assertEqual(data['description'], f'{STATUS_ERR.BAD_INT}')
 
-    def test_422_post_enrollment_course(self):
-        """Verifies 422 with bad ID"""
-        # Send get request and load results.
-        response = self.client().post(
-            '/enrollments', json=self.enrollments.data.bad_course
-        )
-        data = json.loads(response.data)
-        # Verify response.
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
-        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
-
-    def test_422_post_enrollment_student(self):
-        """Verifies 422 with bad studentr ID."""
-        # Send get request and load results.
-        response = self.client().post(
-            '/enrollments', json=self.enrollments.data.bad_student
-        )
-        data = json.loads(response.data)
-        # Verify response.
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], f'{STATUS_ERR.CODE_404}')
-        self.assertEqual(data['description'], f'{STATUS_ERR.NO_RECORD}')
-
-    def test_delete_enrollment(self):
+    def test_delete_enrollment_registrar(self):
         """Verifies delete enrollment record by uid."""
         # Send get request and load results.
         uid = '1'
@@ -1396,7 +1778,31 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
             data['message'], f'{SUCCESS.ENROLLMENT_DELETED} {uid}'
         )
 
-    def test_404_delete_enrollment(self):
+    def test_delete_enrollment_dean(self):  # TOKEN DEAN
+        """Verifies delete enrollment record by uid."""
+        # Send get request and load results.
+        uid = '1'
+        response = self.client().delete(f'/enrollments/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertEqual(
+            data['message'], f'{SUCCESS.ENROLLMENT_DELETED} {uid}'
+        )
+
+    def test_401_delete_enrollment_dean(self):  # TOKEN DEAN
+        """Verifies delete enrollment record by uid."""
+        # Send get request and load results.
+        uid = '1'
+        response = self.client().delete(f'/enrollments/{uid}')
+        data = json.loads(response.data)
+        # Verify response.
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], STATUS_ERR.CODE_401)
+
+    def test_404_delete_enrollment(self):  # TOKEN DEAN
         """Verifies 404 deleting non-existent enrollment."""
         # Send get request and load results.
         uid = 100000
