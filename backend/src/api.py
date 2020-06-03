@@ -49,7 +49,7 @@ def create_app():
         # Respond to GET request.
         if request.method == 'GET':
             @requires_auth('get:students')
-            def get_students():
+            def get_students(jwt):
                 # Get detail arguments.
                 detail = get_detail()
                 page = request.args.get('page')
@@ -64,7 +64,7 @@ def create_app():
         # Respond to POST request.
         elif request.method == 'POST':
             @requires_auth('post:student')
-            def post_student():
+            def post_student(jwt):
                 # Get response data.
                 this_request = request.get_json()
                 # Pass response data to controller.
@@ -85,17 +85,17 @@ def create_app():
         # Get, patch or delete student and return JSON response.
         if request.method == 'GET':
             @requires_auth('get:student')
-            def get_student():
+            def get_student(jwt):
                 this_student.get_student()
             get_student()
         elif request.method == 'PATCH':
             @requires_auth('patch:student')
-            def patch_student():
+            def patch_student(jwt):
                 this_student.edit_student()
             patch_student()
         elif request.method == "DELETE":
             @requires_auth('delete:student')
-            def delete_student():
+            def delete_student(jwt):
                 this_student.delete_student()
             delete_student()
         # Return JSON response.
@@ -120,7 +120,7 @@ def create_app():
         # Respond to GET request.
         if request.method == 'GET':
             @requires_auth('get:instructors')
-            def get_instructors():
+            def get_instructors(jwt):
                 # Get detail arguments.
                 detail = get_detail()
                 page = request.args.get('page')
@@ -134,7 +134,7 @@ def create_app():
         # Respond to POST request.
         elif request.method == 'POST':
             @requires_auth('post:instructor')
-            def post_instructor():
+            def post_instructor(jwt):
                 # Get response data.
                 this_request = request.get_json()
                 # Pass response data to controller.
@@ -155,17 +155,17 @@ def create_app():
         # Get, patch or delete instructor and return JSON response.
         if request.method == 'GET':
             @requires_auth('get:instructor')
-            def get_instructor():
+            def get_instructor(jwt):
                 this_instructor.get_instructor()
             get_instructor()
         elif request.method == 'PATCH':
             @requires_auth('patch:instructor')
-            def patch_instructor():
+            def patch_instructor(jwt):
                 this_instructor.edit_instructor()
             patch_instructor()
         elif request.method == "DELETE":
             @requires_auth('delete:instructor')
-            def delete_instructor():
+            def delete_instructor(jwt):
                 this_instructor.delete_instructor()
             delete_instructor()
         # Return JSON response.
@@ -174,7 +174,7 @@ def create_app():
     """ Get courses instructor is assigned to. """
     @app.route('/instructors/<uid>/courses', methods=['GET'])
     @requires_auth('get:instructor-courses')
-    def view_instructor_courses(uid):
+    def view_instructor_courses(payload, uid):
         # Create Students object.
         this_instructor = Instructors(uid=uid)
         # Get a list of courses with students detail.
@@ -201,7 +201,7 @@ def create_app():
         # Respond to POST request.
         elif request.method == 'POST':
             @requires_auth('post:course')
-            def post_course():
+            def post_course(jwt):
                 # Get response data.
                 this_request = request.get_json()
                 # Pass response data to controller.
@@ -224,12 +224,12 @@ def create_app():
             this_course.get_course()
         elif request.method == 'PATCH':
             @requires_auth('patch:course')
-            def patch_course():
+            def patch_course(jwt):
                 this_course.edit_course()
             patch_course()
         elif request.method == "DELETE":
             @requires_auth('delete:course')
-            def delete_course():
+            def delete_course(jwt):
                 this_course.delete_course()
             delete_course()
         # Return JSON response.
@@ -261,8 +261,8 @@ def create_app():
     # -------------------------------------------------------------------------
     """ Create an assignment. """
     @app.route('/assignments', methods=['POST'])
-    # @requires_auth('post:assignment')
-    def assign_course():
+    @requires_auth('post:assignment')
+    def assign_course(payload):
         # Get response data.
         this_request = request.get_json()
         # Pass response data to controller.
@@ -274,8 +274,8 @@ def create_app():
 
     """ Delete an Assignment. """
     @app.route('/assignments/<uid>', methods=['DELETE'])
-    # @requires_auth('delete:assignment')
-    def delete_assignment(uid):
+    @requires_auth('delete:assignment')
+    def delete_assignment(payload, uid):
         # Pass  the enrollment id to controller.
         this_assignment = Assignments(uid=uid)
         # Delete the course.
@@ -287,8 +287,8 @@ def create_app():
     # -------------------------------------------------------------------------
     """ Create an enrollment. """
     @app.route('/enrollments', methods=['POST'])
-    # @requires_auth('post:enrollment')
-    def enroll_course():
+    @requires_auth('post:enrollment')
+    def enroll_course(payload):
         # Get response data.
         this_request = request.get_json()
         # Pass response data to controller.
@@ -300,8 +300,8 @@ def create_app():
 
     """ Delete an enrollment. """
     @app.route('/enrollments/<uid>', methods=['DELETE'])
-    # @requires_auth('delete:enrollment')
-    def delete_enrollment(uid):
+    @requires_auth('delete:enrollment')
+    def delete_enrollment(payload, uid):
         # Pass  the enrollment id to controller.
         this_enrollment = Enrollments(uid=uid)
         # Delete the course.

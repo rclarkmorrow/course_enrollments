@@ -108,15 +108,11 @@ def verify_decode_jwt(token):
 # specific permissions.
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
-        print('WRAPS')
-        
         @wraps(f)
         def wrapper(*args, **kwargs):
-            # print(f'kwargs: {kwargs}')
             token = get_token_auth_header()
             payload = verify_decode_jwt(token)
             check_permissions(permission, payload)
-            print(f'Payload: {payload}\n Args: {args}\n Kwargs: {kwargs}')
             return f(payload, *args, **kwargs)
         return wrapper
     return requires_auth_decorator

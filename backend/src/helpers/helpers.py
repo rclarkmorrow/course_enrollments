@@ -3,11 +3,15 @@
 # --------------------------------------------------------------------------"""
 
 
-# Third party dependencies
+# Standard library dependencies.
+import json
+import requests
+
+# Third party dependencies.
 from flask import request
 
-# Local application dependencies
-from config.config import STATUS_ERR
+# Local application dependencies.
+from config.config import STATUS_ERR, AUTH0
 
 
 """ --------------------------------------------------------------------------#
@@ -42,3 +46,26 @@ def get_detail():
             422
         )
     return detail
+
+
+# Structure CURL request with auth0 configuration and return response with
+# bearer tokens for test users.
+def get_user_token(test_user):
+    url = f'https://{AUTH0.DOMAIN}/oauth/token'
+    headers = {"content-type": "application/json"}
+    password = test_user.PASSWORD
+    request_data = {
+        "client_id": AUTH0.CLIENT_ID,
+        "client_secret": AUTH0.CLIENT_SECRET,
+        "audience": f'{AUTH0.API_AUDIENCE}',
+        "grant_type": "password",
+        "username": test_user.NAME,
+        "password": password, "scope": "openid"}
+    response = json.loads(requests.post(url, json=request_data,
+                                        headers=headers).text)
+    return response['access_token']
+
+
+# Return header with bearer token.
+def get_user_token_headers(test_user):
+    return {'authorization': "Bearer " + get_user_token(test_user)}

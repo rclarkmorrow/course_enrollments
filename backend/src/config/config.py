@@ -53,10 +53,30 @@ def create_test_db_path():
 # --------------------------------------------------------------------------"""
 
 
+# Auth0 Configuration.
 AUTH0 = SimpleNamespace(
     DOMAIN='rclarkmorrow.auth0.com',
     ALGORITHMS=['RS256'],
-    API_AUDIENCE='course-enrollments-services'
+    API_AUDIENCE='course-enrollments-services',
+    CLIENT_ID='vsWulCF5Hcv5iFzlSQLxKuzSAcApam2c',
+    CLIENT_SECRET=('IcouX6edbuTSuYEz8F2iwEfyjuJefnKckv6eD'
+                   'oQLjRAMluvDJjehIbSHLxBiwaVg')
+)
+
+# Test user configuration.
+TEST_USERS = SimpleNamespace(
+    DEAN=SimpleNamespace(
+        NAME='dean@rclarkmorrow.com',
+        PASSWORD='TestDean1'
+    ),
+    REGISTRAR=SimpleNamespace(
+        NAME='registrar@rclarkmorrow.com',
+        PASSWORD='TestRegistrar1'
+    ),
+    INSTRUCTOR=SimpleNamespace(
+        NAME='instructor@rclarkmorrow.com',
+        PASSWORD='TestInstructor1'
+    )
 )
 
 
