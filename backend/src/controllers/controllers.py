@@ -172,6 +172,7 @@ class Controller:
         for record in person:
             start = record.course.start_time
             end = record.course.end_time
+            days = record.course.days
             if uid_check:
                 # Verify unique assignment or enrollment.
                 if record.course_uid == self.request_data['course_uid']:
@@ -179,13 +180,17 @@ class Controller:
                                       STATUS_ERR.DUPLICATE, 422)
             # Exclude check against provided course_uid.
             if exclude_uid != record.course.uid:
-                # Verify that there are no scheduling conflicts.
-                if ((course.start_time > start
-                        and course.start_time < end) or
-                        (course.end_time > start and
-                            course.end_time < end)):
-                    raise StatusError(STATUS_ERR.CODE_422,
-                                      STATUS_ERR.CONFLICT, 422)
+                # Loop through days.
+                for day in course.days:
+                    # Check for matching day.
+                    if day in days:
+                        # Verify that there are no scheduling conflicts.
+                        if ((course.start_time > start
+                                and course.start_time < end) or
+                                (course.end_time > start and
+                                    course.end_time < end)):
+                            raise StatusError(STATUS_ERR.CODE_422,
+                                              STATUS_ERR.CONFLICT, 422)
 
     """ DATABASE HELPERS
     # ----------------------------------------------------------------------"""
@@ -583,7 +588,10 @@ class Courses(Controller):
         # Create a course with new times to pass to schedule verifier.
         course = Course(
             start_time=new_start,
-            end_time=new_end
+            end_time=new_end,
+            days=(self.request_data['days']
+                  if 'days' in self.request_data.keys()
+                  else self.record.days)
         )
         # Loop through course's enrollments.
         for enrollment in self.record.enrollments:
