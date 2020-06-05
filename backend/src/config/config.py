@@ -3,6 +3,7 @@
 # --------------------------------------------------------------------------"""
 
 # Standard Library dependencies
+import os
 from types import SimpleNamespace
 
 # Third party dependencies
@@ -15,12 +16,35 @@ from flask_migrate import Migrate
 # --------------------------------------------------------------------------"""
 
 
-# Environmental variables for connecting to database.
+# Environmental variables for connecting to a local PSQL database.
+# NOTE: If running locally, replace information with local
+# environmental variables.
 db_user = 'postgres'
 db_passw = 'postgres'
 database_name = 'enrollments'
+database_host = 'localhost:5432'
 database_path = ("postgresql://{}:{}@{}/{}"
-                 .format(db_user, db_passw, 'localhost:5432', database_name))
+                 .format(db_user, db_passw, database_host, database_name))
+
+
+# Returns alternate path for local test database.
+# NOTE: If running locally, replace information with local
+# environmental variables.
+def create_test_db_path():
+    db_user = 'postgres'
+    db_passw = 'postgres'
+    database_name = 'test-enrollments'
+    database_host = 'localhost:5432'
+    database_path = ("postgresql://{}:{}@{}/{}"
+                     .format(db_user, db_passw, database_host,
+                             database_name))
+    return database_path
+
+
+# Environmental variable for DB paths.
+database_path = os.getenv('DATABASE_URL', database_path)
+test_database_path = os.getenv('HEROKU_POSTGRESQL_COPPER_URL',
+                               create_test_db_path())
 
 # Define db
 db = SQLAlchemy()
@@ -37,45 +61,61 @@ def setup_db(app, db_path=None):
     migrate = Migrate(app, db)
 
 
-# Returns alternate path for test database:
-def create_test_db_path():
-    db_user = 'postgres'
-    db_passw = 'postgres'
-    database_name = 'test-enrollments'
-    database_path = ("postgresql://{}:{}@{}/{}"
-                     .format(db_user, db_passw, 'localhost:5432',
-                             database_name))
-    return database_path
-
-
 """ --------------------------------------------------------------------------#
 # AUTH0 SETTINGS
 # --------------------------------------------------------------------------"""
 
 
-# Auth0 Configuration.
+# Default Auth0 environmental variables.
+# NOTE: If creating your own deployment, these should be
+# updated with your auth0 account details. 
+DOMAIN = 'rclarkmorrow.auth0.com'
+ALGORITHMS = 'RS256'
+API_AUDIENCE = 'course-enrollments-services'
+CLIENT_ID = 'vsWulCF5Hcv5iFzlSQLxKuzSAcApam2c'
+CLIENT_SECRET = ('IcouX6edbuTSuYEz8F2iwEfyjuJefnKckv6eD'
+                 'oQLjRAMluvDJjehIbSHLxBiwaVg')
+
+
+# Auth0 variables oject.
 AUTH0 = SimpleNamespace(
-    DOMAIN='rclarkmorrow.auth0.com',
-    ALGORITHMS=['RS256'],
-    API_AUDIENCE='course-enrollments-services',
-    CLIENT_ID='vsWulCF5Hcv5iFzlSQLxKuzSAcApam2c',
-    CLIENT_SECRET=('IcouX6edbuTSuYEz8F2iwEfyjuJefnKckv6eD'
-                   'oQLjRAMluvDJjehIbSHLxBiwaVg')
+    DOMAIN=os.getenv('DOMAIN', DOMAIN),
+    ALGORITHMS=os.getenv('ALGORITHMS', ALGORITHMS),
+    API_AUDIENCE=os.getenv('API_AUDIENCE', API_AUDIENCE),
+    CLIENT_ID=os.getenv('CLIENT_ID', CLIENT_ID),
+    CLIENT_SECRET=os.getenv('CLIENT_SECRET', CLIENT_SECRET)
 )
 
-# Test user configuration.
+# Default test users.
+# NOTE: If creating your own deployment, these should be
+# updated with your specific test user details.
+DEAN = SimpleNamespace(
+    NAME='dean@rclarkmorrow.com',
+    PASSWORD='TestDean1'
+)
+REGISTRAR = SimpleNamespace(
+    NAME='registrar@rclarkmorrow.com',
+    PASSWORD='TestRegistrar1'
+)
+INSTRUCTOR = SimpleNamespace(
+    NAME='instructor@rclarkmorrow.com',
+    PASSWORD='TestInstructor1'
+)
+
+
+# Test user variables object.
 TEST_USERS = SimpleNamespace(
     DEAN=SimpleNamespace(
-        NAME='dean@rclarkmorrow.com',
-        PASSWORD='TestDean1'
+        NAME=os.getenv('DEAN_NAME', DEAN.NAME),
+        PASSWORD=os.getenv('DEAN_PASSWORD', DEAN.PASSWORD)
     ),
     REGISTRAR=SimpleNamespace(
-        NAME='registrar@rclarkmorrow.com',
-        PASSWORD='TestRegistrar1'
+        NAME=os.getenv('REGISTRAR_NAME', REGISTRAR.NAME),
+        PASSWORD=os.getenv('REGISTRAR_PASSWORD', REGISTRAR.PASSWORD)
     ),
     INSTRUCTOR=SimpleNamespace(
-        NAME='instructor@rclarkmorrow.com',
-        PASSWORD='TestInstructor1'
+        NAME=os.getenv('INSTRUCTOR_NAME', INSTRUCTOR.NAME),
+        PASSWORD=os.getenv('INSTRUCTOR_PASSWORD', INSTRUCTOR.PASSWORD)
     )
 )
 
@@ -86,7 +126,7 @@ TEST_USERS = SimpleNamespace(
 
 
 # Enable debug mode.
-DEBUG = True
+DEBUG = False
 
 # Regex expressions for validation.
 REGEX = SimpleNamespace(

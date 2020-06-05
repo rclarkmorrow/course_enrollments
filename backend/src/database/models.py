@@ -140,7 +140,7 @@ class Instructor(db.Model):
             'bio': self.bio
         }
 
-    # Return full details with enrollments.
+    # Return full details with assignments.
     def with_assignments(self):
         return {
             'uid': self.uid,
@@ -182,11 +182,10 @@ class Course(db.Model):
     #                               lazy=True)
 
     # Methods
-    def __init__(self, title=None, days=None, hour=None,
+    def __init__(self, title=None, days=None,
                  start_time=None, end_time=None, description=None):
         self.title = title
         self.days = days
-        self.hour = hour
         self.start_time = start_time
         self.end_time = end_time
         self.description = description

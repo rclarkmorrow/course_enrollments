@@ -9,7 +9,7 @@ import json
 
 # Local application dependencies
 from api import create_app
-from config.config import db, setup_db, create_test_db_path
+from config.config import db, setup_db, test_database_path
 from config.config import STATUS_ERR, SUCCESS, PAGE_LENGTH, TEST_USERS
 from helpers.helpers import get_user_token_headers
 from database.test_data.courses_data import CourseTest
@@ -23,11 +23,16 @@ from database.test_data.enrollments_data import EnrollmentTest
 # UNITTEST SETUP
 # --------------------------------------------------------------------------"""
 
-# Get token headers for test users
+# Get token headers for test users.
 
 instructor_token = get_user_token_headers(test_user=TEST_USERS.INSTRUCTOR)
 registrar_token = get_user_token_headers(test_user=TEST_USERS.REGISTRAR)
 dean_token = get_user_token_headers(test_user=TEST_USERS.DEAN)
+
+# Uncomment to console log tokens.
+# print(f'Instructor Token: {instructor_token}')
+# print(f'Registrar Token: {registrar_token}')
+# print(f'Dean Token: {dean_token}')
 
 
 # This class represents the course enrollments test case.
@@ -36,8 +41,7 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
     def setUp(self):
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_path = create_test_db_path()
-        setup_db(self.app, self.database_path)
+        setup_db(self.app, test_database_path)
         self.db = db
         # Create app context and database.
         self.app_context = self.app.app_context()

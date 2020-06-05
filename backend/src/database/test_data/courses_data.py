@@ -171,7 +171,10 @@ class CourseTest:
             },
             conflict_time={
                 "start_time": "12:30",
-                "end_time": "13:00"
+                "end_time": "13:00",
+                "days": [
+                    "Monday"
+                ]
             }
         )
 

@@ -53,14 +53,15 @@ def get_detail():
 def get_user_token(test_user):
     url = f'https://{AUTH0.DOMAIN}/oauth/token'
     headers = {"content-type": "application/json"}
-    password = test_user.PASSWORD
     request_data = {
         "client_id": AUTH0.CLIENT_ID,
         "client_secret": AUTH0.CLIENT_SECRET,
         "audience": f'{AUTH0.API_AUDIENCE}',
         "grant_type": "password",
         "username": test_user.NAME,
-        "password": password, "scope": "openid"}
+        "password": test_user.PASSWORD,
+        "scope": "openid"
+    }
     response = json.loads(requests.post(url, json=request_data,
                                         headers=headers).text)
     return response['access_token']

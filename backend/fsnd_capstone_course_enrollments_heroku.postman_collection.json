@@ -1,0 +1,5365 @@
+{
+	"info": {
+		"_postman_id": "e1bcf46f-ded7-4a8f-8dd4-c26cac4fbf22",
+		"name": "fsnd_capstone_course_enrollments_heroku",
+		"description": "This will test HTTP requests against endpoints in the \"Course Enrollments\" app.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "public",
+			"item": [
+				{
+					"name": "courses",
+					"item": [
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ea563634-a935-4c48-a0b0-bfbd947dca8f",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "21c37164-13bf-4a0f-aed7-a6faa1c43208",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "753945fa-1f91-4c74-b504-b5e451c46bf6",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "76605ad8-47a8-463e-9cf3-4b58659bc2c9",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});",
+											"pm.test(\"value contains a total records item above 0\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.total_records).to.be.above(0)",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1df30b20-408b-40a9-bb40-919fd46bc472",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e7ff4d04-07be-4b92-9f94-5fc39a76e160",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7047ed22-873e-43d4-a8c7-742b2c5ab7d4",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dfd5e203-a819-4937-9ecf-334755e2e6c5",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"The Science of\",\n    \"days\": [\n        \"Monday\",\n        \"Wednesday\",\n        \"Friday\"\n    ],\n    \"start_time\": \"10:30\",\n    \"end_time\": \"12:00\",\n    \"description\": \"There's a science to it.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9a0c88b6-fb08-41bf-af6c-376fdb1d3464",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"Let's change a course description!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "379cd83e-1067-427e-ab39-0f88cf5c5493",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "students",
+					"item": [
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2226bca8-4d44-4ff6-b964-601337bc324b",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "51388267-8fc8-4c5a-b022-65a2cdbe2aa6",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "df2c0650-6e84-4a30-bba8-ae8b8ce11e89",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8ce1938a-f943-4764-a1e4-80225ac92821",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f13cada1-dda5-48ab-98a0-9aa021dc96b0",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6553700a-9600-455e-92c9-e277a4d52bfa",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "db9bf0e6-39f2-4582-8d73-7a10ff500a0d",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Cleese\",\n    \"email\": \"john.cleese@gmail.com\",\n    \"phone\": \"123-456-7890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ba0ff753-d5ff-4274-a14e-3acf60588212",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fa8f6277-7be0-4f84-941e-2e64eab20aa0",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "instructors",
+					"item": [
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c5c61720-ec09-410b-a3d2-bc41dbd518a8",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b54ed684-703e-494c-b445-66665e2fdfe5",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0a9f0446-64d0-4cfa-89a4-bfdc8fcc1575",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "55cfe945-da9f-42e3-9766-7eb06e07911f",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "36c1a914-8773-4ab3-ba3f-ce559bd18780",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "26d3b896-5585-4366-a54e-ebe68f85fd0b",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1db897d3-307b-4e73-af4b-7105a840db91",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dr. Strangelove\",\n    \"email\": \"dr.strangelove@university.edu\",\n    \"phone\": \"123-456-7890\",\n    \"bio\": \"Specialized in teaching people how to stop worrying.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8b887a30-e936-431b-9d03-84a56a85fe38",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f984922c-cbb3-45f8-8802-79f3384d8599",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "assignments",
+					"item": [
+						{
+							"name": "/assignments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "36353a8e-fc86-4deb-851a-858a394c9502",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"instructor_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/assignments/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1def6eea-7100-486b-8145-7cb9b94c240b",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "enrollments",
+					"item": [
+						{
+							"name": "/enrollments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "cfe31ffa-6b44-4aff-a8f9-2c3b186f366b",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"student_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/enrollments/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6ce67237-86b4-4d0f-9482-36702a466be7",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "instructor",
+			"item": [
+				{
+					"name": "courses",
+					"item": [
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "269e651b-85ac-45d2-a794-9e5ca9311406",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2ae9e5d8-3148-4cbb-9bd8-3eb42937d6d5",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0be78ed2-8494-42fa-b309-19647ca87fe2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "01a0d460-3adf-4d5e-8056-1a125a8f5754",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});",
+											"pm.test(\"value contains a total records item above 0\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.total_records).to.be.above(0)",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e24b368a-80a1-410a-9772-6a5422017dc7",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "bb7d0697-c7e2-4198-82ba-f79e678db767",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "532dcc6c-1fec-42c4-afb8-d948ca740764",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c6c655bf-5c7c-495a-aac2-aa6bfbdfd6de",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"The Science of\",\n    \"days\": [\n        \"Monday\",\n        \"Wednesday\",\n        \"Friday\"\n    ],\n    \"start_time\": \"10:30\",\n    \"end_time\": \"12:00\",\n    \"description\": \"There's a science to it.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1009d3e4-7b8e-4e1c-bb8b-b755564cabce",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"Let's change a course description!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "29cac1f9-3089-4210-aa6f-18ff8b6e3a0c",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "students",
+					"item": [
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4995df98-052d-4ad1-934c-226e91922278",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e2ed5eca-4916-4d15-b7d9-7d86fa358ed2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8ed8b9ca-8cd2-422d-bc4d-c38426b98181",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d6b2f0b9-20ed-47be-b89a-ddae5f84e8cc",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a5bf8b5d-dfee-40b0-92e4-80d0b95e5641",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7722ec45-84b1-48d8-a2e2-b002aeba18c5",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "6c83dd85-aaaa-4b50-bf23-1b165abff392",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Cleese\",\n    \"email\": \"john.cleese@gmail.com\",\n    \"phone\": \"123-456-7890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "de656ae3-6e84-430f-bd29-e0b55748ca41",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "631e13e9-7e2c-49c2-bcc1-458d4b9523df",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "instructors",
+					"item": [
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e784fe08-111c-446a-8451-b9a8406fd4e7",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "67986901-6ae4-4892-b15a-33b46b866ac5",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a52dbdec-c9c1-4d3b-a0ab-1f2bf458fa86",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "51a20049-48e7-425e-a8ed-0be8205731bd",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f974d68d-8dbf-43e1-abe4-cc0a4377e998",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ba99b1a9-b3a3-478f-a73e-ee3b9b33e4d3",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0fc7d902-8e30-45e8-941e-001fb0e894ee",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dr. Strangelove\",\n    \"email\": \"dr.strangelove@university.edu\",\n    \"phone\": \"123-456-7890\",\n    \"bio\": \"Specialized in teaching people how to stop worrying.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "daad7cbb-90df-4606-82ca-90b74f723603",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e5e05ccc-742e-4af5-ae1e-a47b1f2737db",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "assignments",
+					"item": [
+						{
+							"name": "/assignments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "eafa3064-7b4c-454a-a3ad-11cf5b7e3cdd",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"instructor_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/assignments/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "675860fb-3785-47ed-8d99-ed2d7194d971",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "enrollments",
+					"item": [
+						{
+							"name": "/enrollments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0c3cd8a1-0eef-4683-ae10-4bcb635c28cc",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_id\": 1,\n    \"student_id\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/enrollments/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "55473a97-5d7b-4e9f-952b-1a71bf63bc1b",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndCcXRrdmdpYS1ZWVRzMGhuQVRWQyJ9.eyJpc3MiOiJodHRwczovL3JjbGFya21vcnJvdy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWVkMTk4ZjBmMGI4ZTYwYzhlODNmZTYzIiwiYXVkIjpbImNvdXJzZS1lbnJvbGxtZW50cy1zZXJ2aWNlcyIsImh0dHBzOi8vcmNsYXJrbW9ycm93LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE1OTEyMjM4NjksImV4cCI6MTU5MTMxMDI2OSwiYXpwIjoidnNXdWxDRjVIY3Y1aUZ6bFNRTHhLdXpTQWNBcGFtMmMiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGFkZHJlc3MgcGhvbmUiLCJndHkiOiJwYXNzd29yZCIsInBlcm1pc3Npb25zIjpbInBhdGNoOmNvdXJzZSIsInBvc3Q6Y291cnNlIl19.Y11LCrMZcNxYQVP0fMziEKPTf1os7TLmhzVvCRi-wBdj9Qv8gxtImcQQB35JUJdFQo-KxjMVwuUCy2vRUSkNwV74cnu1PoeBmtOy_6nlK6F6bbODOsENIkHt7KsFpxzMBtXBWAGF7DWumJeEvnj6rs37PgS258gcze8tvUgVnneNC_AS4ydznv8IM9jU-nhAoiv3Rj6F2bgdYluYWNn8AZyEII4G3rZjKIf-jZTFAQRojNS4v6LBwzUaYRwSQ1uvlYbkbykSuhY5Gj-jI2hGKCGemKpEyYBQAIAo2yCuKavjbo-uTPv2eW9W7PAyAP3vVZ9KfNapGS0wZVEMqGATGA",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7b7f06c3-580e-4911-8001-9d81dfdce9d7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc442fc2-176c-4942-8dc9-d4acbf766219",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "registrar",
+			"item": [
+				{
+					"name": "courses",
+					"item": [
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0c6ddd88-daf2-4065-aa03-42046956eb8e",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c8a4fa7e-c1f4-4e3c-94b1-4501300846b3",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "39b090f4-51b6-441f-8180-cd9521a2eeed",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "067bab2c-cfd0-45c3-b1b0-acda84511aac",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});",
+											"pm.test(\"value contains a total records item above 0\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.total_records).to.be.above(0)",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7ebae52a-2365-472f-af08-ff1748e93d2f",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "af86593b-a642-4955-8261-9e2c21afcb7b",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});",
+											"pm.test(\"value contains course item with a students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1094b3e5-6dc1-4464-b327-46a7903aa17d",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});",
+											"pm.test(\"value contains course item with an instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e74e687e-dd19-482d-a387-92ea80521a53",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"The Science of\",\n    \"days\": [\n        \"Monday\",\n        \"Wednesday\",\n        \"Friday\"\n    ],\n    \"start_time\": \"10:30\",\n    \"end_time\": \"12:00\",\n    \"description\": \"There's a science to it.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "4ee7ff4e-8b95-48c1-9a84-840eade93a63",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"Let's change a course description!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ff557750-8b83-4ea3-bf9f-24cb1faf01af",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "students",
+					"item": [
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2fea4dcd-bb05-4904-858c-80379aad8217",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "39f11ef6-d4d6-4a30-871b-0859c73a4b2f",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "196e20bf-a225-462c-a327-3f2a6f2b5d13",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d8e67478-b4c7-4cb7-9324-a165651278e2",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "379381df-4693-4c9e-ac4b-c45ea13da290",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains student item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.student).to.have.property('name')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "1f3e6d4e-d464-423c-b93a-81ec3a6cb0f8",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains student item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.student).to.have.property('name')",
+											"});",
+											"pm.test(\"value contains student item with an enrollments array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.student.enrollments).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f1ab6465-f484-4ed2-9782-e9e038b3945a",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Cleese\",\n    \"email\": \"john.cleese@gmail.com\",\n    \"phone\": \"123-456-7890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e0862abb-7267-4e78-be38-1dd9eedf6f1d",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c649be36-b642-4188-885b-709dca8f481b",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "instructors",
+					"item": [
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "93648088-1acf-4d16-aa79-3c72e1b76618",
+										"exec": [
+											" pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d218110d-bcb5-4066-8d54-d76cd73377b4",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c0ab4aba-a3c6-4be3-b235-53b3c2a7eebc",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "eb23f50a-81c5-4967-b03c-dc7f79ff8dc7",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7115678c-29d3-4eb0-ac3f-5c5b6368cbaf",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructor item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructor).to.have.property('name')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b1c51e64-ca0c-44ab-984c-7b3af989368d",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructor item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructor).to.have.property('name')",
+											"});",
+											"pm.test(\"value contains instructor item with an assignments array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructor.assignments).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "705ad813-b97b-485c-ae75-d10b4b7425f4",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dr. Strangelove\",\n    \"email\": \"dr.strangelove@university.edu\",\n    \"phone\": \"123-456-7890\",\n    \"bio\": \"Specialized in teaching people how to stop worrying.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "3cc75f98-0870-44f7-ae7f-bff8e0ced7f8",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "2665f7b4-9e19-4328-a04f-65bd7cec1980",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "assignments",
+					"item": [
+						{
+							"name": "/assignments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "8bac561b-ed07-4243-a686-876ccfa9b068",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"instructor_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/assignments/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "14df9213-a968-4b1a-92e5-77c4c7338f4a",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "enrollments",
+					"item": [
+						{
+							"name": "/enrollments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d8dda966-1096-44aa-a79b-7e6d2d8c56a3",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"student_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/enrollments/7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "20413974-8354-43f0-ad9e-7c0968ff5cf0",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndCcXRrdmdpYS1ZWVRzMGhuQVRWQyJ9.eyJpc3MiOiJodHRwczovL3JjbGFya21vcnJvdy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWVkMTk5OGYzNzQyZWYwYzg3ZjY2M2FhIiwiYXVkIjpbImNvdXJzZS1lbnJvbGxtZW50cy1zZXJ2aWNlcyIsImh0dHBzOi8vcmNsYXJrbW9ycm93LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE1OTEzNzQzNTMsImV4cCI6MTU5MTQ2MDc1MywiYXpwIjoidnNXdWxDRjVIY3Y1aUZ6bFNRTHhLdXpTQWNBcGFtMmMiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGFkZHJlc3MgcGhvbmUiLCJndHkiOiJwYXNzd29yZCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTplbnJvbGxtZW50IiwiZGVsZXRlOnN0dWRlbnQiLCJnZXQ6Y291cnNlLWluc3RydWN0b3JzIiwiZ2V0OmNvdXJzZS1zdHVkZW50cyIsImdldDppbnN0cnVjdG9yIiwiZ2V0Omluc3RydWN0b3ItY291cnNlcyIsImdldDppbnN0cnVjdG9ycyIsImdldDpzdHVkZW50IiwiZ2V0OnN0dWRlbnQtY291cnNlcyIsImdldDpzdHVkZW50cyIsInBhdGNoOnN0dWRlbnQiLCJwb3N0OmVucm9sbG1lbnQiLCJwb3N0OnN0dWRlbnQiXX0.cWhVT64i2R1nlIQF0w8s7kXIh_Gh-AYEBB5YNKM70Or-Y9r0VCRfvEqqX-GaAm2GOiwo38yRIlk64T1CzOPYePxS9fKPkQkby7MzjSABrxxlqyFhJtUbN0O6hYGrG5HDWRHmvh55kOKufryrS-LzGS2WRp67UNscrGPvSnFURisu8w_o70XbqtdTReU_h65F3D1KwaAW9Pns2tmyilt1m58egAuFg3h2z3DzQQVt68f2RY2xcwP08SFt0hWsesSR4W1KbQDDCI1qnFdU3M87m6ZTcdN2tU7gARYSRTdh9CbfkO6adpfktsn-HIrTIAKQmFjeG_WMNlpL6lU60EcNjA",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0e6d5d9b-453e-4377-88b4-6ff49c301592",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "19b30e1f-1178-4d3a-8975-d8a617732582",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "dean",
+			"item": [
+				{
+					"name": "courses",
+					"item": [
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9ddadd2c-a9a8-47e1-a383-4f08cf0fb0e5",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "128fd62c-9ba7-4f61-836d-02d1ad370706",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fe623dbd-23a0-4bbb-9816-9413b729c878",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "55b213dd-83fe-4582-80e0-95ec89133c4e",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains courses array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.courses).to.be.an('array')",
+											"});",
+											"pm.test(\"value contains a total records item above 0\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.total_records).to.be.above(0)",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b684d205-e601-402b-82fb-8ea4c9e2956e",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "a2ab8456-0334-4d1b-a6a5-10d5049c72bc",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});",
+											"pm.test(\"value contains course item with a students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/1/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f3f94c1f-ef84-491c-a092-0fa85dd7b581",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains course item with a title\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course).to.have.property('title')",
+											"});",
+											"pm.test(\"value contains course item with an instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.course.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/courses/1/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"1",
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dc58336f-2aa4-49ed-b51b-708c5751d4aa",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"The Science of\",\n    \"days\": [\n        \"Monday\",\n        \"Wednesday\",\n        \"Friday\"\n    ],\n    \"start_time\": \"10:30\",\n    \"end_time\": \"12:00\",\n    \"description\": \"There's a science to it.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c1f667d9-ac00-459b-969a-c8f1e92b6ea1",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"description\": \"Let's change a course description!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"7"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/courses/7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "113d03b2-39b5-422c-a16c-5b31f51cfecb",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/courses/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"courses",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "students",
+					"item": [
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "9e09b620-143a-4e23-b16d-56c8b2e826d1",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e0facf27-e61c-4a5f-b371-0fe920e6835a",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0566e4a3-cb1a-4496-9353-81d177b90371",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "883ed61e-25a2-419c-bc5d-e07582270705",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains students array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.students).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "82ec4775-0cb0-4725-816e-b831dc9eaf90",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains student item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.student).to.have.property('name')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "167ff2bb-1960-466f-983d-b0ea252bb083",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains student item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.student).to.have.property('name')",
+											"});",
+											"pm.test(\"value contains student item with an enrollments array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.student.enrollments).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/students/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "335f7045-f9ca-4277-b9e9-08aa0c8b71b0",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"John Cleese\",\n    \"email\": \"john.cleese@gmail.com\",\n    \"phone\": \"123-456-7890\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "22c634f4-34ab-431a-b9a5-21bf56d39037",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"7"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/students/7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "08cdcb21-3740-4729-a1f7-f2615561e34c",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/students/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"students",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "instructors",
+					"item": [
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "59cfe6c9-1a7f-49c7-8090-7355e357e211",
+										"exec": [
+											" pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "69892ffe-bcc4-4c89-8b41-f7ae6aef961c",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?detail=full",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "d41f460a-af7b-4df3-8a3a-af2e2273bfdf",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?detail=full",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "detail",
+											"value": "full"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors?page=1&detail=short",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "f17b3aa5-9c9d-4eb5-b143-8a9dad35cdeb",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructors array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructors).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors?page=1&detail=short",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "detail",
+											"value": "short"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c3452f6e-e10c-4bb4-aeea-e7cafbd02789",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructor item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructor).to.have.property('name')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/1/courses",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "e1c459f2-5363-4b98-823b-23f36b540c4b",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"value contains instructor item with a name\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructor).to.have.property('name')",
+											"});",
+											"pm.test(\"value contains instructor item with an assignments array\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.instructor.assignments).to.be.an('array')",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/instructors/1/courses",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"1",
+										"courses"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c9d2453c-2cbe-4d6d-912d-db8d069fcb07",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Dr. Strangelove\",\n    \"email\": \"dr.strangelove@university.edu\",\n    \"phone\": \"123-456-7890\",\n    \"bio\": \"Specialized in teaching people how to stop worrying.\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ef9cb1c2-a30d-4742-981e-76c2b6e238e5",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Let's change a name!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/instructors/6",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ede51ac0-7670-401b-b2df-d54c44dafc2b",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/instructors/6",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"instructors",
+										"6"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "assignments",
+					"item": [
+						{
+							"name": "/assignments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "53908e4d-3db2-4b67-b393-8d2b0609805a",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"instructor_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/assignments/7",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "88c771a2-9fb9-453f-8da1-3f22fec98cb4",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/assignments/7",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"assignments",
+										"7"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "enrollments",
+					"item": [
+						{
+							"name": "/enrollments",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "7515a453-8dca-4608-97d4-0408a0f3a618",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"course_uid\": 1,\n    \"student_uid\": 5\n\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "/enrollments/8",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "14964c74-3285-47c3-a041-18454d34a0d7",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/enrollments/8",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"enrollments",
+										"8"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndCcXRrdmdpYS1ZWVRzMGhuQVRWQyJ9.eyJpc3MiOiJodHRwczovL3JjbGFya21vcnJvdy5hdXRoMC5jb20vIiwic3ViIjoiYXV0aDB8NWVkMTlhMTJiZWI2ODQwYzkzOTM3MTMzIiwiYXVkIjpbImNvdXJzZS1lbnJvbGxtZW50cy1zZXJ2aWNlcyIsImh0dHBzOi8vcmNsYXJrbW9ycm93LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE1OTEyMjM4NjksImV4cCI6MTU5MTMxMDI2OSwiYXpwIjoidnNXdWxDRjVIY3Y1aUZ6bFNRTHhLdXpTQWNBcGFtMmMiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGFkZHJlc3MgcGhvbmUiLCJndHkiOiJwYXNzd29yZCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTphc3NpZ25tZW50IiwiZGVsZXRlOmNvdXJzZSIsImRlbGV0ZTplbnJvbGxtZW50IiwiZGVsZXRlOmluc3RydWN0b3IiLCJkZWxldGU6c3R1ZGVudCIsImdldDpjb3Vyc2UtaW5zdHJ1Y3RvcnMiLCJnZXQ6Y291cnNlLXN0dWRlbnRzIiwiZ2V0Omluc3RydWN0b3IiLCJnZXQ6aW5zdHJ1Y3Rvci1jb3Vyc2VzIiwiZ2V0Omluc3RydWN0b3JzIiwiZ2V0OnN0dWRlbnQiLCJnZXQ6c3R1ZGVudC1jb3Vyc2VzIiwiZ2V0OnN0dWRlbnRzIiwicGF0Y2g6Y291cnNlIiwicGF0Y2g6aW5zdHJ1Y3RvciIsInBhdGNoOnN0dWRlbnQiLCJwb3N0OmFzc2lnbm1lbnQiLCJwb3N0OmNvdXJzZSIsInBvc3Q6ZW5yb2xsbWVudCIsInBvc3Q6aW5zdHJ1Y3RvciIsInBvc3Q6c3R1ZGVudCJdfQ.CABACKFsABoVkgTEFo05zszbYN1UpBHQkZ2mlTkBUZugPJjZ57fFBiMthwjyuROEIPXxZYArj2Tfh1np3-hNBlrF8CuIMXAG0c6tGVVk78j91M6jjjgXeksqG8EG96fX72ADwYfrKH-s5MVH5drZULu67uM_25EzMX_j9-0U6duFtSVYakULaOssI80q57HclBmK8AhDQibfDoXbbT-6CJySN7oqe5RmAXh7JwoBlgV3zZZCoT1UfktaTZcIkwngsYqaYbRfjEZmHCSgB_Xb8RVU5tjE_3fYyEJqUkZDl-DCK3YwkTtthYb7YhlPwTwHdt0ECUVJTXQJjgYE8wdsyw",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "298bf1a2-cea0-47ba-92e6-705a7ac68359",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d6c9b80c-f405-497b-8eda-ad254391626c",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "5685ca3a-bf73-41a4-8581-1cd26efb8382",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "1eb5343c-c3bd-4f2b-9f4c-79d1d6fbb354",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "3356e771-8fe9-4c58-920d-52df83307774",
+			"key": "host",
+			"value": "https://course-enrollments.herokuapp.com/",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
