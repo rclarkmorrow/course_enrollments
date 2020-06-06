@@ -150,7 +150,9 @@ class CourseEnrollmentsTestCase(unittest.TestCase):
     def test_get_students_full(self):
         """Verifies student records are returned in full form."""
         # Send get request and load results.
-        response = self.client().get('/students?detail=full', headers=dean_token)
+        response = self.client().get(
+            '/students?detail=full', headers=dean_token
+        )
         data = json.loads(response.data)
         # Verify response.
         self.assertEqual(response.status_code, 200)

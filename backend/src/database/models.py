@@ -3,13 +3,8 @@
 # --------------------------------------------------------------------------"""
 
 
-# Third party dependencies
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String
-
 # Local applicaiton dependencies
 from config.config import db
-
 
 
 """ --------------------------------------------------------------------------#

@@ -5,7 +5,6 @@
 
 # Standard library dependencies
 import unittest
-import json
 
 # Local application dependencies
 from api import create_app

@@ -68,7 +68,7 @@ def setup_db(app, db_path=None):
 
 # Default Auth0 environmental variables.
 # NOTE: If creating your own deployment, these should be
-# updated with your auth0 account details. 
+# updated with your auth0 account details.
 DOMAIN = 'rclarkmorrow.auth0.com'
 ALGORITHMS = 'RS256'
 API_AUDIENCE = 'course-enrollments-services'

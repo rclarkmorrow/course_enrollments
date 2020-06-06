@@ -210,7 +210,7 @@ class Controller:
 
     # Gets record by ID and deletes it.
     def delete_record(self):
-        self.record =self.get_record_by_id()
+        self.record = self.get_record_by_id()
         self.record.delete()
 
     # Get all records from provided table.

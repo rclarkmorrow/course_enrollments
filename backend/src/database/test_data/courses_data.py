@@ -47,7 +47,7 @@ class CourseTest:
                 days="Monday,Wednesday,Friday",
                 start_time="10:30",
                 end_time="13:00",
-                description=("Have considered bears lately? Think about them" 
+                description=("Have considered bears lately? Think about them"
                              " in new ways.")
             ),
             Course(
