@@ -12,9 +12,27 @@ from config.config import db
 # --------------------------------------------------------------------------"""
 
 
+# Base Model: constains common methods.
+# -----------------------------------------------------------------------------
+class BaseModel:
+    # Insert record.
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    # Update record.
+    def update(self):
+        db.session.commit()
+
+    # Delete record.
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+
 # Student Model: Contains data about a student.
 # -----------------------------------------------------------------------------
-class Student(db.Model):
+class Student(BaseModel, db.Model):
     # Main model
     __tablename__ = 'student'
     # Autoincrementing, unique primary key
@@ -32,20 +50,6 @@ class Student(db.Model):
         self.name = name
         self.email = email
         self.phone = phone
-
-    # Insert record.
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    # Update record.
-    def update(self):
-        db.session.commit()
-
-    # Delete record.
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
     # Return full details.
     def full(self):
@@ -82,7 +86,7 @@ class Student(db.Model):
 
 # Instructor Model: Contains data about an instructor.
 # -----------------------------------------------------------------------------
-class Instructor(db.Model):
+class Instructor(BaseModel, db.Model):
     # Main model
     __tablename__ = 'instructor'
 
@@ -105,17 +109,6 @@ class Instructor(db.Model):
         self.email = email
         self.phone = phone
         self.bio = bio
-
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
 # Return full details.
     def full(self):
@@ -155,7 +148,7 @@ class Instructor(db.Model):
 
 # Course Model -- Contains data about a course.
 # ------------------------------------------------------------------------
-class Course(db.Model):
+class Course(BaseModel, db.Model):
     __tablename__ = 'course'
 
     # Autoincrementing, unique primary key
@@ -184,20 +177,6 @@ class Course(db.Model):
         self.start_time = start_time
         self.end_time = end_time
         self.description = description
-
-    # Insert record.
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    # Update record.
-    def update(self):
-        db.session.commit()
-
-    # Delete record.
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
 
     # Return full details
     def full(self):
@@ -267,7 +246,7 @@ class Course(db.Model):
 
 # Assignment Model: Registers instructor to teach a course.
 # ------------------------------------------------------------------------
-class Assignment (db.Model):
+class Assignment (BaseModel, db.Model):
     # Main model
     __tablename__ = 'assignment'
     # Autoincrementing, unique primary key
@@ -283,22 +262,10 @@ class Assignment (db.Model):
     instructor = db.relationship('Instructor', back_populates='assignments',
                                  lazy=True)
 
-    # Methods
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
 
 # Enrollment model - Registers a student for a course.
 # ------------------------------------------------------------------------
-class Enrollment(db.Model):
+class Enrollment(BaseModel, db.Model):
     # Main model
     __tablename__ = 'enrollment'
     # Autoincrementing, unique primary key
@@ -313,15 +280,3 @@ class Enrollment(db.Model):
     course = db.relationship('Course', back_populates='enrollments', lazy=True)
     student = db.relationship('Student', back_populates='enrollments',
                               lazy=True)
-
-    # Methods
-    def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def update(self):
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
