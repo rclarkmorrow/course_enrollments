@@ -44,6 +44,8 @@ class Student(BaseModel, db.Model):
     # Relationships
     enrollments = db.relationship('Enrollment', back_populates='student',
                                   cascade='all,delete,delete-orphan')
+    grades = db.relationship('Grade', back_populates='student',
+                             cascade='all,delete,delete-orphan')
 
     # Methods
     def __init__(self, name=None, email=None, phone=None):
@@ -102,6 +104,8 @@ class Instructor(BaseModel, db.Model):
     # Relationships
     assignments = db.relationship('Assignment', back_populates='instructor',
                                   cascade='all,delete,delete-orphan')
+    grades = db.relationship('Grade', back_populates='instructor',
+                             cascade='all,delete,delete-orphan')
 
     # Methods
     def __init__(self, name=None, email=None, phone=None, bio=None):
@@ -280,3 +284,18 @@ class Enrollment(BaseModel, db.Model):
     course = db.relationship('Course', back_populates='enrollments', lazy=True)
     student = db.relationship('Student', back_populates='enrollments',
                               lazy=True)
+
+
+# Enrollment model - Registers a student for a course.
+# ------------------------------------------------------------------------
+class Grade(BaseModel, db.Model):
+    # Main model
+    __tablename__ = 'grade'
+    # Autoincrementing, unique primary key
+    uid = db.Column(db.Integer, primary_key=True)
+    # Grade data
+    student_uid = db.Column(db.Integer, db.ForeignKey('student.uid'),
+                            nullable=False)
+    course_uid = db.Column(db.Integer, db.ForeignKey('course.uid'),
+                           nullable=False)
+    grade = db.Column(db.String(120), nullable=False)
