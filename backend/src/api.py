@@ -316,6 +316,18 @@ def create_app():
         # Return JSON response.
         return this_enrollment.response
 
+    # Grade routes
+    # --------------------------------------------------------------------------
+    """ Create a grade. """
+    @app.route('/grades', methods=['POST'])
+    def create_grades():
+        return "Hello world!"
+
+    """ Edit or Delete a grade. """
+    @app.route('/grades/<uid>', methods=['PATCH', 'DELETE'])
+    def edit_delete_grades(uid):
+        return "Hellow World!"
+
     """ ----------------------------------------------------------------------#
     # ERROR_HANDLING
     # ----------------------------------------------------------------------"""
