@@ -119,6 +119,11 @@ def create_app():
         # Return JSON response.
         return this_student.response
 
+    """ Get grades for a student. """
+    @app.route('/student/<uid>/grades', methods=['GET'])
+    def create_grades(uid):
+        return "Hello world!"
+
     # Instructor routes
     # -------------------------------------------------------------------------
     """ View or create instructors. """
@@ -263,6 +268,11 @@ def create_app():
         this_course.get_course_with_instructors()
         # Return JSON response.
         return this_course.response
+
+    """ Get grades for a course. """
+    @app.route('/courses/<uid>/grades', methods=['GET'])
+    def create_grades(uid):
+        return "Hello world!"
 
     # Assignment routes
     # -------------------------------------------------------------------------
