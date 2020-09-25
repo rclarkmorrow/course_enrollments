@@ -121,14 +121,14 @@ def create_app():
 
     """ Get grades for a student. """
     @app.route('/student/<uid>/grades', methods=['GET'])
-    def create_grades(uid):
+    def get_student_grades(uid):
         return "Hello world!"
 
     # Instructor routes
     # -------------------------------------------------------------------------
     """ View or create instructors. """
     @app.route('/instructors', methods=['GET', 'POST'])
-    def view_or_manage_instsructors():
+    def view_or_manage_instructors():
         # Respond to GET request.
         if request.method == 'GET':
             @requires_auth('get:instructors')
@@ -271,7 +271,7 @@ def create_app():
 
     """ Get grades for a course. """
     @app.route('/courses/<uid>/grades', methods=['GET'])
-    def create_grades(uid):
+    def get_course_grades(uid):
         return "Hello world!"
 
     # Assignment routes
@@ -392,7 +392,7 @@ def create_app():
     @app.errorhandler(500)
     def server_error(error):
         return jsonify({
-            'succes': False,
+            'success': False,
             'error': 500,
             'message': STATUS_ERR.CODE_500
         }), 500
