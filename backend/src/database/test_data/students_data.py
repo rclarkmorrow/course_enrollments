@@ -90,5 +90,5 @@ class StudentTest:
 
     # Inserts seed data into database.
     def create_records(self):
-        for course in self.seeds:
-            course.insert()
+        for student in self.seeds:
+            student.insert()
